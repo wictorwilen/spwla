@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<webParts>
+  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+    <metaData>
+      <type name="SPCS.WindowsLiveAuth.NewUsersWebPart, SPCS.WindowsLiveAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4b37e1a71dac8e81" />
+      <importErrorMessage>Cannot import Web Part.</importErrorMessage>
+    </metaData>
+    <data>
+      <properties>
+        <property name="Title" type="string">All members</property>
+        <property name="Description" type="string">Displays all the members</property>
+        <property name="CatalogIconImageUrl" type="string">/_layouts/images/SPCS.WindowsLiveAuth/liveid16.gif</property>
+        <property name="NumberOfUsers" type="int">0</property>
+        <property name="Columns" type="int">4</property>
+        <property name="ImageSize" type="int">50</property>
+        <property name="UsersPerPage" type="int">20</property>
+        <property name="ShowPager" type="bool">true</property>
+        <property name="AllowClose" type="bool">false</property>
+      </properties>
+    </data>
+  </webPart>
+</webParts>
