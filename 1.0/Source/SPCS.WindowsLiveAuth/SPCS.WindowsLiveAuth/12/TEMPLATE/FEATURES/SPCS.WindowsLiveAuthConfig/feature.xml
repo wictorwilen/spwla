@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--*
+ * 
+ * Windows Live ID Membership Provider for SharePoint
+ * originally developed for SharePointCommunity.se
+ * http://www.sharepointcommunity.se/
+ * *******************************************
+ * Copyright (c) 2009, Wictor Wilén
+ * http://spwla.codeplex.com/
+ * http://www.wictorwilen.se/
+ * *******************************************
+ * Licensed under the Microsoft Public License (Ms-PL) 
+ * http://www.opensource.org/licenses/ms-pl.html
+ * 
+ *-->
+
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/"
+         Id="29969154-87A6-432B-ABF6-D21AC5B16ED0"
+         Title="Windows Live ID Authentication Configuration"
+         Description="Configures Windows Live ID Authentication for Web Aplications"
+         Scope="Farm"
+         Creator="Wictor Wilén"
+         ImageUrl="SPCS.WindowsLiveAuth\LiveID32.gif"        
+         Version="1.0.0.0"
+         >
+  
+  <ElementManifests>
+    
+    <ElementManifest Location="elements.xml"/>
+  </ElementManifests>  
+</Feature>

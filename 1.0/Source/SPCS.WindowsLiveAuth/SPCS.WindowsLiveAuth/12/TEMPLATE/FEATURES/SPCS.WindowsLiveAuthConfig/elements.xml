@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--*
+ * 
+ * Windows Live ID Membership Provider for SharePoint
+ * originally developed for SharePointCommunity.se
+ * http://www.sharepointcommunity.se/
+ * *******************************************
+ * Copyright (c) 2009, Wictor Wilén
+ * http://spwla.codeplex.com/
+ * http://www.wictorwilen.se/
+ * *******************************************
+ * Licensed under the Microsoft Public License (Ms-PL) 
+ * http://www.opensource.org/licenses/ms-pl.html
+ * 
+ *-->
+
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <!-- add settings to CA-->
+  <CustomAction Id="Configure_WLA"
+                Location="Microsoft.SharePoint.Administration.ApplicationManagement"
+                GroupId="ApplicationSecurity"
+                Sequence="99"
+                Title="Windows Live ID configuration"
+                Description="Configure Windows Live ID for Web Applications">
+    <UrlAction Url="/_admin/liveauth-settings.aspx" />
+  </CustomAction>
+
+  <!-- set redirect to the new profile page on pages such as userdisp.aspx -->
+  <Control Id="ProfileRedirection"
+           Sequence="50"
+           ControlAssembly="SPCS.WindowsLiveAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4b37e1a71dac8e81"
+           ControlClass="SPCS.WindowsLiveAuth.LiveAuthProfileRedirect"/>
+</Elements>

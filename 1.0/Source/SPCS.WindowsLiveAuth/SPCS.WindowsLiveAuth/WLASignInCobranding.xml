@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Use this template to customize Sign in page for your application. This template lists all customizable properties -->
+<Application>
+  <!-- White label properties define the look and feel for the sign in page including header customization, colors on the page and logo -->
+  <WhiteLabelProperties>
+    <!-- This property defines the URL of your Application's logo. You do not have to define the actual URL here. It must be defined in the string table -->
+    <Logo>STRID_LOGO</Logo>
+    <!-- This property defines the URL (SSL) of your Application's logo -->
+    <LogoSSL>STRID_LOGOSSL</LogoSSL>
+    <!-- This property defines the alternative text for your Application's logo -->
+    <LogoAltText>STRID_LOGOALTTEXT</LogoAltText>
+    <!-- This property defines the URL of header background -->
+    <HeaderBkgndImage>STRID_HEADER_BKGND_IMAGE</HeaderBkgndImage>
+    <!-- This property defines the color of header -->
+    <HeaderBkgndColor>#336633</HeaderBkgndColor>
+    <!-- This property defines the background color of the sign in page -->
+    <BkgndColor>#e5ece5</BkgndColor>
+    <!-- This property defines the color of fonts used in the footer section of the sign in page -->
+    <FontColorLight>#b5781e</FontColorLight>
+    <!-- This property defines the color of hyperlinks -->
+    <FontColorLink>#b5781e</FontColorLink>
+    <!-- This property defines the color of sign in and sign up buttons -->
+    <ButtonColor>#9EB39B</ButtonColor>
+    <!-- This property defines the border color of the buttons -->
+    <ButtonBorder>#336633</ButtonBorder>
+    <!-- This property defines the color of fonts on the page -->
+    <FontColor>black</FontColor>
+    <!-- This property defines the color of the user tiles -->
+    <UserTileColor>#C6D6B9</UserTileColor>
+    <!-- This property defines the font color of Windows Live value proposition statement -->
+    <WLIDValuePropFontColor>WLIDValuePropFontColor</WLIDValuePropFontColor>
+  </WhiteLabelProperties>
+  <!-- Site Login UI properties define the content (text) on the sign in page. 
+  You can configure four UI properties - 
+  contextual header statement, 
+  title (of the product/ service), 
+  sub-title (description of your product/service), 
+  and an optional image that appears in the product description section. 
+  Each of these four properties has an id associated with it. 
+  You can define multiple versions of title, subtitle, header and image and call the appropriate version by 
+  passing a query string parameter called wlcxt in the query string. 
+  Actual strings are defined in the string table (see below). 
+  These properties are optional and you can choose not to define them -->
+  <SiteLoginUIProperties>
+    <Header id="default">STRID_WL_DEFAULT_HEADER</Header>
+    <Title id="default">STRID_WL_DEFAULT_TITLE</Title>
+    <Subtitle id="default">STRID_WL_DEFAULT_SUBTITLE</Subtitle>
+    <ImageURL id="default">STRID_WL_DEFAULT_IMAGEURL</ImageURL>
+    <SSLImageURL id="default">STRID_WL_DEFAULT_SSLIMAGEURL</SSLImageURL>
+  </SiteLoginUIProperties>
+  <!-- String table defines all the strings that you plan to use in the Site Login UI properties in different locales -->
+  <StringTable>
+    <Language langID="en">
+      <!-- Display name is the name of your application -->
+      <String id="STRID_DISPLAYNAME">Windows Live ID</String>
+      <String id="STRID_WL_DEFAULT_HEADER">Sign in with your Windows Live ID</String>
+      <String id="STRID_WL_DEFAULT_TITLE">SharePoint Community Sweden and Sweden SharePoint User Group</String>
+      <String id="STRID_WL_DEFAULT_SUBTITLE"></String>
+      <String id="STRID_WL_DEFAULT_IMAGEURL"></String>
+      <String id="STRID_WL_DEFAULT_SSLIMAGEURL"></String>
+      <String id="STRID_LOGO">http://shared.live.com/ceiKB83P7mF6XW7lyeP3rg/WindowsLive.png</String>
+      <String id="STRID_LOGOSSL">https://shared.live.com/ceiKB83P7mF6XW7lyeP3rg/WindowsLive.png</String>
+      <String id="STRID_LOGOALTTEXT">Windows Live</String>
+      <String id="STRID_HEADER_BKGND_IMAGE"></String>
+    </Language>
+    <!-- You may choose to add more languages as shown below -->
+    <Language langID="sv">
+      <!-- Display name is the name of your application -->
+      <String id="STRID_DISPLAYNAME">Windows Live ID</String>
+      <String id="STRID_WL_DEFAULT_HEADER">Inicia sesión con tu Windows Live ID</String>
+      <String id="STRID_WL_DEFAULT_TITLE">Windows Live</String>
+      <String id="STRID_WL_DEFAULT_SUBTITLE"></String>
+      <String id="STRID_WL_DEFAULT_IMAGEURL"></String>
+      <String id="STRID_WL_DEFAULT_SSLIMAGEURL"></String>
+      <String id="STRID_LOGO">http://shared.live.com/ceiKB83P7mF6XW7lyeP3rg/WindowsLive.png</String>
+      <String id="STRID_LOGOSSL">https://shared.live.com/ceiKB83P7mF6XW7lyeP3rg/WindowsLive.png</String>
+      <String id="STRID_LOGOALTTEXT">Windows Live</String>
+      <String id="STRID_HEADER_BKGND_IMAGE"></String>
+    </Language>
+  </StringTable>
+</Application>
