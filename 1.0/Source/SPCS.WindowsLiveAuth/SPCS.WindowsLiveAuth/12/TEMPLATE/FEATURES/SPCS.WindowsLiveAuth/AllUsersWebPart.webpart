@@ -16,6 +16,7 @@
         <property name="UsersPerPage" type="int">20</property>
         <property name="ShowPager" type="bool">true</property>
         <property name="AllowClose" type="bool">false</property>
+        <property name="RequireLogin" type="bool">false</property>
       </properties>
     </data>
   </webPart>

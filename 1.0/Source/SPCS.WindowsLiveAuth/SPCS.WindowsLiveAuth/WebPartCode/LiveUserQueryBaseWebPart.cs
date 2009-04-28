@@ -75,6 +75,16 @@ namespace SPCS.WindowsLiveAuth {
             get;
             set;
         }
+        [WebBrowsable]
+        [WebDisplayName("Require logged in user")]
+        [WebDescription("Only shows the information for logged in users")]
+        [Category("Configuration")]
+        [Personalizable(PersonalizationScope.Shared)]
+        public bool RequireLogin {
+            get;
+            set;
+        }
+
 
         public LiveUserQueryBaseWebPart() {
             this.ExportMode = WebPartExportMode.All;
@@ -82,9 +92,17 @@ namespace SPCS.WindowsLiveAuth {
 
 
         protected override void CreateChildControls() {
+
+            base.CreateChildControls();
+
+            if (this.RequireLogin && !this.Page.User.Identity.IsAuthenticated) {
+                this.Controls.Add(new LiteralControl("<div class='ms-vb'>The information is only shown to authenticated users.</div>"));
+                return;
+            }
+
             try {
 
-                base.CreateChildControls();
+                
 
                 tTable = new Table();
                 
@@ -154,7 +172,9 @@ namespace SPCS.WindowsLiveAuth {
             return base.SaveControlState();
         }
         protected override void OnPreRender(EventArgs e) {
-
+            if (this.RequireLogin && !this.Page.User.Identity.IsAuthenticated) {
+                return;
+            }
             base.OnPreRender(e);
 
             try {
