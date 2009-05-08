@@ -45,6 +45,8 @@ namespace SPCS.WindowsLiveAuth {
         protected CheckBox cbHttps;
         protected CheckBox cbApprove;
         protected ValidationSummary ValSummary;
+        protected CheckBox cbDelegated;
+        protected TextBox tbPolicyPage;
 
 
         private void Page_Load(object sender, System.EventArgs e) {
@@ -73,6 +75,8 @@ namespace SPCS.WindowsLiveAuth {
             tbProfileSiteUrl.Text = string.Empty;
             tbSyncListName.Text = string.Empty;
             cbApprove.Checked = true;
+            cbDelegated.Checked = false;
+            tbPolicyPage.Text = string.Empty;
 
             // delete providers
             removeProviders(Selector.CurrentItem);
@@ -80,6 +84,9 @@ namespace SPCS.WindowsLiveAuth {
 
         public void Submit_Click(Object sender, EventArgs e) {
             Validate("valgroup1");
+            if (this.IsValid && cbDelegated.Checked == true) {
+                Validate("valgroup2");
+            }
             if (this.IsValid) {
                 LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(Selector.CurrentItem);
                 if (settings == null) {                    
@@ -95,6 +102,8 @@ namespace SPCS.WindowsLiveAuth {
                 settings.ProfileSiteUrl = tbProfileSiteUrl.Text;
                 settings.SiteSyncListName = tbSyncListName.Text;
                 settings.AutoApprove = cbApprove.Checked;
+                settings.UseDelegatedAuth = cbDelegated.Checked;
+                settings.PolicyPage = tbPolicyPage.Text;
                 settings.Update();
 
                 
@@ -113,13 +122,22 @@ namespace SPCS.WindowsLiveAuth {
                 if (!string.IsNullOrEmpty(ddZones.SelectedValue)) {
                     // configure the zone
                     configureFormsAuthForZone(webApp, (SPUrlZone)Enum.Parse(typeof(SPUrlZone), ddZones.SelectedValue));
+
+                    // configure the other zones
+                    foreach (SPUrlZone zone in webApp.IisSettings.Keys) {
+                        if (zone != (SPUrlZone)Enum.Parse(typeof(SPUrlZone), ddZones.SelectedValue)) {
+                            configureProvidersForZone(webApp, zone);
+                        }
+                    }
                 }
-                // configure the other zones
-                foreach (SPUrlZone zone in webApp.IisSettings.Keys) {
-                    if (zone != (SPUrlZone)Enum.Parse(typeof(SPUrlZone), ddZones.SelectedValue)) {
+                else {
+                    // configure the other zones
+                    foreach (SPUrlZone zone in webApp.IisSettings.Keys) {
                         configureProvidersForZone(webApp, zone);
-                    }                    
+                    }
                 }
+
+                
                 //applyWebConfigModifications(webApp);
 
                 
@@ -156,7 +174,7 @@ namespace SPCS.WindowsLiveAuth {
                 foreach (SPUrlZone zone in Selector.CurrentItem.IisSettings.Keys) {
                     SPIisSettings iis = Selector.CurrentItem.IisSettings[zone];
                     if (iis.AuthenticationMode == AuthenticationMode.Forms) {
-                        ddZones.Items.Add(new ListItem(zone.ToString() + " (" + iis.MembershipProvider + ")", zone.ToString()));
+                        ddZones.Items.Add(new ListItem(String.Format("{0} ({1})", zone, iis.MembershipProvider), zone.ToString()));
                     }
 
                 }
@@ -170,6 +188,8 @@ namespace SPCS.WindowsLiveAuth {
                     tbProfileSiteUrl.Text = settings.ProfileSiteUrl;
                     tbSyncListName.Text = settings.SiteSyncListName;
                     cbApprove.Checked = settings.AutoApprove;
+                    cbDelegated.Checked = settings.UseDelegatedAuth;
+                    tbPolicyPage.Text = settings.PolicyPage;
                 }
                 else {
                     tbApplicationId.Text = string.Empty;
@@ -180,6 +200,8 @@ namespace SPCS.WindowsLiveAuth {
                     tbProfileSiteUrl.Text = string.Empty;
                     tbSyncListName.Text = string.Empty;
                     cbApprove.Checked = true;
+                    cbDelegated.Checked = false;
+                    tbPolicyPage.Text = string.Empty;
                 }
             }   
         }
@@ -211,15 +233,15 @@ namespace SPCS.WindowsLiveAuth {
 
             return ret;
         }
-        private void removeProviders(SPWebApplication webApp) {
+        private static void removeProviders(SPWebApplication webApp) {
             throw new NotImplementedException();
         }
-        private void configureFormsAuthForZone(SPWebApplication webApp, SPUrlZone urlZone) {
+        private static void configureFormsAuthForZone(SPWebApplication webApp, SPUrlZone urlZone) {
             // make a manual change to the web.config, since the SPWebConfigModification does not support
             // zone specific changes. backside, this will not propagate to new front-ends (but just reconfigure WLA)
             SPIisSettings iisSettings;
             if (webApp.IisSettings.TryGetValue(urlZone, out iisSettings)) {
-                FileInfo info = new FileInfo(iisSettings.Path.ToString() + @"\web.config");
+                FileInfo info = new FileInfo(String.Format(@"{0}\web.config", iisSettings.Path));
                 
                 XmlDocument document = new XmlDocument();
                 document.Load(info.ToString());
@@ -265,7 +287,7 @@ namespace SPCS.WindowsLiveAuth {
             // zone specific changes. backside, this will not propagate to new front-ends (but just reconfigure WLA)
             SPIisSettings iisSettings;
             if (webApp.IisSettings.TryGetValue(urlZone, out iisSettings)) {
-                FileInfo info = new FileInfo(iisSettings.Path.ToString() + @"\web.config");
+                FileInfo info = new FileInfo(String.Format(@"{0}\web.config", iisSettings.Path));
 
                 XmlDocument document = new XmlDocument();
                 document.Load(info.ToString());
@@ -283,7 +305,7 @@ namespace SPCS.WindowsLiveAuth {
             }
 
         }
-        private void createSyncList(string siteUrl, string listName) {
+        private static void createSyncList(string siteUrl, string listName) {
             using (SPSite site = new SPSite(siteUrl)) {
                 using (SPWeb web = site.OpenWeb()) {
                     SPList list;
@@ -417,6 +439,18 @@ namespace SPCS.WindowsLiveAuth {
             }
             if (!list.Fields.ContainsField("City")) {
                 list.Fields.Add("City", SPFieldType.Text, false);
+            }
+            if (!list.Fields.ContainsField("CID")) {
+                list.Fields.Add("CID", SPFieldType.Note, false);
+                SPField field = list.Fields["CID"];
+                field.Hidden = true;
+                field.Update();
+            }
+            if (!list.Fields.ContainsField("ConsentToken")) {
+                list.Fields.Add("ConsentToken", SPFieldType.Note, false);
+                SPField field = list.Fields["ConsentToken"];
+                field.Hidden = true;
+                field.Update();
             }
 
         }

@@ -13,53 +13,41 @@
  * 
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.SharePoint;
-using Microsoft.SharePoint.Utilities;
 
 namespace SPCS.WindowsLiveAuth {
     public static class SPListItemExtension {
         public static string GetListItemString(this SPListItem item, string column) {
-            string ret = string.Empty;
             object data = item.GetListItemData(column);
 
-            if (data != null) {
-                ret = (string)data;
-            }
-
-            return ret;
+            if (data != null)
+                return (string)data;
+            else
+                return string.Empty;
         }
         public static DateTime GetListItemDateTime(this SPListItem item, string column) {
-            DateTime ret = new DateTime(1900, 1, 1);            
             object data = item.GetListItemData(column);
 
-            if (data != null) {
-                ret = (DateTime)data;
-            }
-
-            return ret;
+            if (data != null)
+                return (DateTime)data;
+            else
+                return new DateTime(1900, 1, 1);
         }
 
         public static bool GetListItemBool(this SPListItem item, string column) {
-            bool ret = false;
             object data =item.GetListItemData(column);
 
-            if (data != null) {
-                ret = (bool)data;
-            }
-
-            return ret;
+            if (data != null)
+                return (bool)data;
+            else
+                return false;
         }
 
         public static object GetListItemData(this SPListItem item, string column) {
-            object ret = null;
-            if (item.Contains(column)) {
-                ret = item[column];
-            }
-
-            return ret;
+            if (item.Contains(column))
+                return item[column];
+            else
+                return null;
         }
 
         public static bool Contains(this SPListItem item, string fieldName) {

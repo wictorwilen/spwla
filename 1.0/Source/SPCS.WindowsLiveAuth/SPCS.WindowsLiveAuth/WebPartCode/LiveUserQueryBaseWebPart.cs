@@ -20,7 +20,7 @@ using Microsoft.SharePoint;
 using System.Web.UI;
 
 namespace SPCS.WindowsLiveAuth {
-    public abstract class LiveUserQueryBaseWebPart : System.Web.UI.WebControls.WebParts.WebPart {
+    public abstract class LiveUserQueryBaseWebPart : WebPart {
 
         protected LinkButton lbPrevious;
         protected LinkButton lbNext;
@@ -85,6 +85,25 @@ namespace SPCS.WindowsLiveAuth {
             set;
         }
 
+        [WebBrowsable]
+        [WebDisplayName("Show Presence")]
+        [WebDescription("Show presence information")]
+        [Category("Configuration")]
+        [Personalizable(PersonalizationScope.Shared)]
+        public bool ShowPresence {
+            get;
+            set;
+        }
+        
+        [WebBrowsable]
+        [WebDisplayName("Show Presence for anonymous")]
+        [WebDescription("Indicates if presence is shown for anonymous users")]
+        [Category("Configuration")]
+        [Personalizable(PersonalizationScope.Shared)]
+        public bool ShowPresenceForAnonymous {
+            get;
+            set;
+        }
 
         public LiveUserQueryBaseWebPart() {
             this.ExportMode = WebPartExportMode.All;
@@ -182,41 +201,37 @@ namespace SPCS.WindowsLiveAuth {
                 if (settings == null) {
                     return;
                 }
-                SPSecurity.RunWithElevatedPrivileges(delegate() {
+                SPSecurity.RunWithElevatedPrivileges(() => {
                     using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                         using (SPWeb web = site.OpenWeb()) {
                             SPList list = web.Lists[settings.ProfileListName];
-                            SPQuery query = new SPQuery();
-                            query.Query = this.Query;
-                            if (this.NumberOfUsers > 0) {
+                            SPQuery query = new SPQuery { Query = this.Query };
+                            if (this.NumberOfUsers > 0)
                                 query.RowLimit = (uint)this.NumberOfUsers;
-                            }
                             SPListItemCollection items = list.GetItems(query);
                             int count = items.Count;
                             int added = 0;
                             TableRow row = null;
                             // paging support                            
                             int maxPage = (int)Math.Ceiling((double)list.ItemCount / this.UsersPerPage);
-                            if (iCurrentPage == 0) {
+                            if (iCurrentPage == 0)
                                 iCurrentPage = 1;
-                            }
                             lbPrevious.Enabled = !(iCurrentPage == 1);
                             lbNext.Enabled = !(maxPage == iCurrentPage);
-                            lCurrentPage.Text = iCurrentPage.ToString();    
+                            lCurrentPage.Text = iCurrentPage.ToString();
                             lLastPage.Text = maxPage.ToString();
-                            for (int i = 0; 
-                                    i < this.UsersPerPage && (iCurrentPage-1)*this.UsersPerPage +i < items.Count; 
-                                    i++) {
-
+                            for (int i = 0; i < this.UsersPerPage && (iCurrentPage - 1) * this.UsersPerPage + i < items.Count; i++) {
                                 SPListItem item = items[(iCurrentPage - 1) * this.UsersPerPage + i];
                                 added++;
                                 if (i % this.Columns == 0) {
                                     row = new TableRow();
-                                    tTable.Rows.AddAt(tTable.Rows.Count-2, row);
+                                    tTable.Rows.AddAt(tTable.Rows.Count - 2, row);
                                 }
                                 TableCell cell = new TableCell();
                                 LiveCommunityUserControl ctrl = new LiveCommunityUserControl();
-                                ctrl.LiveCommunityUser = LiveCommunityUser.GetUser(item["UUID"].ToString());                                
+                                ctrl.LiveCommunityUser = LiveCommunityUser.GetUser(item["UUID"].ToString());
+                                ctrl.ShowPresence = this.ShowPresence;
+                                ctrl.ShowPresenceForAnonymous = this.ShowPresenceForAnonymous;
                                 //ctrl.Width = new Unit((100 / this.Columns).ToString() + "%");
                                 ctrl.ImageSize = this.ImageSize;
                                 cell.Controls.Add(ctrl);

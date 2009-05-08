@@ -42,7 +42,8 @@ namespace SPCS.WindowsLiveAuth {
             this.LockedOn = listItem.GetListItemDateTime("LockedOn");
             this.City = listItem.GetListItemString("City");
             this.Country = listItem.GetListItemString("Country");
-
+            this.ConsentToken = listItem.GetListItemString("ConsentToken");
+            this.CID = listItem.GetListItemString("CID");
             // TODO
 
 
@@ -78,7 +79,7 @@ namespace SPCS.WindowsLiveAuth {
             //    }
             //}
             if (sourceWeb == null) {
-                SPSecurity.RunWithElevatedPrivileges(delegate() {
+                SPSecurity.RunWithElevatedPrivileges(() => {
                     // get it using elev privs, if we dont do this then we
                     // get an infinite loop since it checks the roles of the current user
                     using (SPSite site = new SPSite(HttpContext.Current.Request.Url.ToString())) {
@@ -92,22 +93,18 @@ namespace SPCS.WindowsLiveAuth {
             }
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(webApp);
 
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
                         SPQuery query = new SPQuery();
-                        if (id.IndexOf("@") != -1) {
+                        if (id.IndexOf("@") != -1)
                             query.Query = string.Format("<Where><Eq><FieldRef Name='Email'/><Value Type='Text'>{0}</Value></Eq></Where>", id);
-                        }
-                        else {
+                        else
                             query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id);
-                        }
                         SPListItemCollection items = list.GetItems(query);
-                        if (items.Count != 0) {
+                        if (items.Count != 0)
                             lcu = new LiveCommunityUser(items[0]);
-                        }
-
                     }
                 }
             });
@@ -125,12 +122,10 @@ namespace SPCS.WindowsLiveAuth {
             }
             bool retVal = false;
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
-
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         web.AllowUnsafeUpdates = true;
-
                         SPList list = web.Lists[settings.ProfileListName];
                         if (checkUniqueEmail(list, email, id)) {
                             SPListItem item = list.Items.Add();
@@ -156,14 +151,12 @@ namespace SPCS.WindowsLiveAuth {
             List<LiveCommunityUser> users = new List<LiveCommunityUser>();
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-
-                        foreach (SPListItem item in list.Items) {
+                        foreach (SPListItem item in list.Items)
                             users.Add(new LiveCommunityUser(item));
-                        }
                     }
                 }
             });
@@ -175,18 +168,14 @@ namespace SPCS.WindowsLiveAuth {
             }
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-
-                        SPQuery query = new SPQuery();
-                        query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id);
-
+                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id) };
                         SPListItemCollection items = list.GetItems(query);
-                        if (items.Count != 0) {
+                        if (items.Count != 0)
                             items[0].Delete();
-                        }
                     }
                 }
             });
@@ -199,20 +188,14 @@ namespace SPCS.WindowsLiveAuth {
 
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-
-                        SPQuery query = new SPQuery();
-                        query.Query = string.Format("<Where><BeginsWith><FieldRef Name='{0}'/><Value Type='Text'>{1}</Value></BeginsWith></Where>", field, value);
-
+                        SPQuery query = new SPQuery { Query = string.Format("<Where><BeginsWith><FieldRef Name='{0}'/><Value Type='Text'>{1}</Value></BeginsWith></Where>", field, value) };
                         SPListItemCollection items = list.GetItems(query);
-
-                        foreach (SPListItem item in items) {
+                        foreach (SPListItem item in items)
                             users.Add(new LiveCommunityUser(item));
-                        }
-
                     }
                 }
             });
@@ -225,14 +208,11 @@ namespace SPCS.WindowsLiveAuth {
 
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-
-                        SPQuery query = new SPQuery();
-                        query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id);
-
+                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0) {
                             items[0]["Locked"] = false;
@@ -250,14 +230,11 @@ namespace SPCS.WindowsLiveAuth {
 
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-
-                        SPQuery query = new SPQuery();
-                        query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id);
-
+                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0) {
                             items[0]["Locked"] = true;
@@ -272,15 +249,13 @@ namespace SPCS.WindowsLiveAuth {
         public void LoggedIn() {
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
                         web.AllowUnsafeUpdates = true;
                         site.AllowUnsafeUpdates = true;
-                        SPQuery query = new SPQuery();
-                        query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id);
-                        
+                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0) {
                             SPListItem item = items[0];
@@ -298,16 +273,14 @@ namespace SPCS.WindowsLiveAuth {
 
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
                         if (checkUniqueEmail(list, user.Email, user.Id)) {
                             web.AllowUnsafeUpdates = true;
                             site.AllowUnsafeUpdates = true;
-                            SPQuery query = new SPQuery();
-                            query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", user.Id);
-
+                            SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", user.Id) };
                             SPListItemCollection items = list.GetItems(query);
                             if (items.Count != 0) {
                                 SPListItem item = items[0];
@@ -329,12 +302,12 @@ namespace SPCS.WindowsLiveAuth {
                                 item["FeedUrl"] = user.FeedUrl;
                                 item["Country"] = user.Country;
                                 item["City"] = user.City;
+                                item["CID"] = user.CID;
                                 item.Update();
                             }
                         }
-                        else {
+                        else
                             throw new ApplicationException("The e-mail entered is not valid");
-                        }
                     }
                 }
             });
@@ -349,38 +322,33 @@ namespace SPCS.WindowsLiveAuth {
             else {
                 settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
             }
-            SPSecurity.RunWithElevatedPrivileges(
-               delegate() {
-                   using (SPSite elevSite = new SPSite(settings.ProfileSiteUrl)) {
-                       using (SPWeb elevWeb = elevSite.OpenWeb()) {
-                           foreach (SPListItem item in elevWeb.Lists[settings.SiteSyncListName].Items) {
-                               using (SPSite site = new SPSite(item["Url"].ToString())) {
-                                   using (SPWeb sweb = site.OpenWeb()) {
-                                       site.AllowUnsafeUpdates = true;
-                                       sweb.AllowUnsafeUpdates = true;
-                                       SPList list = sweb.Lists["User Information List"];
-                                       SPQuery query = new SPQuery();
-                                       query.Query = string.Format("<Where><Contains><FieldRef Name='Name'/><Value Type='Text'>{0}</Value></Contains></Where>", user.Id);
-                                       SPListItemCollection items = list.GetItems(query);
-
-                                       if (items.Count > 0) {
-                                           SPListItem uItem = items[0];
-                                           uItem["Title"] = user.DisplayName;
-                                           uItem["EMail"] = user.Email;
-                                           uItem["Notes"] = user.Description;
-                                           uItem["Picture"] = user.ImageUrl;
-                                           uItem["Department"] = user.Company;
-                                           uItem["JobTitle"] = user.Title;
-                                           uItem["SipAddress"] = user.SipAddress;
-                                           uItem.Update();
-                                       }
-                                   }
-                               }
-                           }
-                       }
-                   }
-               }
-           );
+            SPSecurity.RunWithElevatedPrivileges(() => {
+                using (SPSite elevSite = new SPSite(settings.ProfileSiteUrl)) {
+                    using (SPWeb elevWeb = elevSite.OpenWeb()) {
+                        foreach (SPListItem item in elevWeb.Lists[settings.SiteSyncListName].Items)
+                            using (SPSite site = new SPSite(item["Url"].ToString())) {
+                                using (SPWeb sweb = site.OpenWeb()) {
+                                    site.AllowUnsafeUpdates = true;
+                                    sweb.AllowUnsafeUpdates = true;
+                                    SPList list = sweb.Lists["User Information List"];
+                                    SPQuery query = new SPQuery { Query = string.Format("<Where><Contains><FieldRef Name='Name'/><Value Type='Text'>{0}</Value></Contains></Where>", user.Id) };
+                                    SPListItemCollection items = list.GetItems(query);
+                                    if (items.Count > 0) {
+                                        SPListItem uItem = items[0];
+                                        uItem["Title"] = user.DisplayName;
+                                        uItem["EMail"] = user.Email;
+                                        uItem["Notes"] = user.Description;
+                                        uItem["Picture"] = sweb.Url + user.ImageUrl;
+                                        uItem["Department"] = user.Company;
+                                        uItem["JobTitle"] = user.Title;
+                                        uItem["SipAddress"] = user.SipAddress;
+                                        uItem.Update();
+                                    }
+                                }
+                            }
+                    }
+                }
+            });
 
         }
         public void PushProfile() {
@@ -449,6 +417,8 @@ namespace SPCS.WindowsLiveAuth {
             get;
             set;
         }
+
+
         public DateTime LockedOn {
             get;
             set;
@@ -470,79 +440,85 @@ namespace SPCS.WindowsLiveAuth {
             set;
         }
 
-     
+        internal string ConsentToken {
+            get;
+            set;
+        }
+        public string CID {
+            get;
+            internal set;
+        }
+        
+        internal void UpdateConsentToken(string token) {
+            LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
+
+            SPSecurity.RunWithElevatedPrivileges(() => {
+                using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
+                    using (SPWeb web = site.OpenWeb()) {
+                        SPList list = web.Lists[settings.ProfileListName];
+                        web.AllowUnsafeUpdates = true;
+                        site.AllowUnsafeUpdates = true;
+                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id) };
+                        SPListItemCollection items = list.GetItems(query);
+                        if (items.Count != 0) {
+                            SPListItem item = items[0];
+                            this.ConsentToken = token;
+                            item["ConsentToken"] = this.ConsentToken;
+                            item.Update();
+                        }
+                    }
+                }
+            });
+        }
 
         internal void SetImage(byte[] bytes) {
-            LiveAuthConfiguration settings;
-
-            settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
-            SPSecurity.RunWithElevatedPrivileges(
-               delegate() {
-                   using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
-                       using (SPWeb web = site.OpenWeb()) {
-                           SPList list = web.Lists[settings.ProfileListName];
-
-
-                           site.AllowUnsafeUpdates = true;
-                           web.AllowUnsafeUpdates = true;
-
-                           SPQuery query = new SPQuery();
-                           query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id);
-                           SPListItemCollection items = list.GetItems(query);
-
-                           if (items.Count > 0) {
-                               SPListItem uItem = items[0];
-                               try {
-                                   uItem.Attachments.DeleteNow("profileImage.png");
-                               }
-                               catch (ArgumentOutOfRangeException) {
-                               }
-                               uItem.Attachments.AddNow("profileImage.png", bytes);
-                           }
-                       }
-                   }
-               }
-           );
+            LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
+            SPSecurity.RunWithElevatedPrivileges(() => {
+                using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
+                    using (SPWeb web = site.OpenWeb()) {
+                        SPList list = web.Lists[settings.ProfileListName];
+                        site.AllowUnsafeUpdates = true;
+                        web.AllowUnsafeUpdates = true;
+                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id) };
+                        SPListItemCollection items = list.GetItems(query);
+                        if (items.Count > 0) {
+                            SPListItem uItem = items[0];
+                            try {
+                                uItem.Attachments.DeleteNow("profileImage.png");
+                            } catch (ArgumentOutOfRangeException) {
+                            }
+                            uItem.Attachments.AddNow("profileImage.png", bytes);
+                        }
+                    }
+                }
+            });
 
         }
         internal void GetImage(Stream stream) {
-            LiveAuthConfiguration settings;
-            
-            settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
-            SPSecurity.RunWithElevatedPrivileges(
-               delegate() {
-                   using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
-                       using (SPWeb web = site.OpenWeb()) {
-                           SPList list = web.Lists[settings.ProfileListName];
-                           SPQuery query = new SPQuery();
-                           query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id);
-                           SPListItemCollection items = list.GetItems(query);
-
-                           if (items.Count > 0) {
-                               SPListItem uItem = items[0];
-                               foreach (string fileName in uItem.Attachments) {
-                                   if (fileName == "profileImage.png") {
-                                       SPFile file = uItem.ParentList.ParentWeb.GetFile(uItem.Attachments.UrlPrefix + fileName);
-                                       
-                                       using (BinaryReader from = new BinaryReader(file.OpenBinaryStream())) {
-                                           int readCount;
-                                           byte[] buffer = new byte[1024];
-                                           while ((readCount = from.Read(buffer, 0, 1024)) != 0) {
-                                               stream.Write(buffer, 0, readCount);
-                                           }
-                                           
-                                       }
-                                       
-                                       break;
-                                   }
-                               }
-
-                               
-                           }
-                       }
-                   }
-               }
-           );
+            LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
+            SPSecurity.RunWithElevatedPrivileges(() => {
+                using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
+                    using (SPWeb web = site.OpenWeb()) {
+                        SPList list = web.Lists[settings.ProfileListName];
+                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id) };
+                        SPListItemCollection items = list.GetItems(query);
+                        if (items.Count > 0) {
+                            SPListItem uItem = items[0];
+                            foreach (string fileName in uItem.Attachments)
+                                if (fileName == "profileImage.png") {
+                                    SPFile file = uItem.ParentList.ParentWeb.GetFile(uItem.Attachments.UrlPrefix + fileName);
+                                    using (BinaryReader from = new BinaryReader(file.OpenBinaryStream())) {
+                                        int readCount;
+                                        byte[] buffer = new byte[1024];
+                                        while ((readCount = from.Read(buffer, 0, 1024)) != 0)
+                                            stream.Write(buffer, 0, readCount);
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                }
+            });
         }
     }
 }

@@ -15,6 +15,7 @@
 using Microsoft.SharePoint.WebControls;
 using System.Web;
 using Microsoft.SharePoint;
+using System;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthProfileRedirect: SPControl {
@@ -26,7 +27,7 @@ namespace SPCS.WindowsLiveAuth {
                     SPUser spUser = SPContext.Current.Web.AllUsers.GetByID(int.Parse(HttpContext.Current.Request.QueryString["id"]));
                     LiveCommunityUser lcu = LiveCommunityUser.GetUser(spUser.GetFormsLoginName());
                     if (lcu != null) {
-                        HttpContext.Current.Response.Redirect("/_layouts/liveauth-profile.aspx?id=" + HttpContext.Current.Request.QueryString["ID"], true);
+                        HttpContext.Current.Response.Redirect(String.Format("/_layouts/liveauth-profile.aspx?id={0}", HttpContext.Current.Request.QueryString["ID"]), true);
                     }
                 }
             }        

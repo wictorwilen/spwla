@@ -28,6 +28,7 @@ namespace SPCS.WindowsLiveAuth {
 
         }
         public override void AddUsersToRoles(string[] usernames, string[] roleNames) {
+
         }
         public override string ApplicationName {
             get;
@@ -46,7 +47,7 @@ namespace SPCS.WindowsLiveAuth {
             if (!RoleExists(roleName)) {
                 throw new ProviderException("Role note found");
             }
-            List<LiveCommunityUser> lcus = LiveCommunityUser.FindUsers("UUID", usernameToMatch);
+            IList<LiveCommunityUser> lcus = LiveCommunityUser.FindUsers("UUID", usernameToMatch);
             switch (roleName.ToLower()) {
                 case "authenticated live users":
                     users = (from lcu in lcus
@@ -153,10 +154,9 @@ namespace SPCS.WindowsLiveAuth {
                     return !lcu.Approved;
                 case "live users":
                     return true;
-
+                default:
+                    return false;
             }
-
-            return false;
 
         }
 

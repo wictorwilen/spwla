@@ -46,6 +46,12 @@ namespace SPCS.WindowsLiveAuth {
 
         [Persisted]
         public bool AutoApprove = true;
+
+        [Persisted]
+        public bool UseDelegatedAuth = false;
+
+        [Persisted]
+        public string PolicyPage = string.Empty;
         
         public readonly string ApplicationAlgorithm = "wsignin1.0";
 
@@ -57,9 +63,9 @@ namespace SPCS.WindowsLiveAuth {
 
         public static LiveAuthConfiguration GetSettings(SPWebApplication webApplication) {
             LiveAuthConfiguration lac = null;
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
-                lac = webApplication.GetChild<LiveAuthConfiguration>("LiveAuthConfiguration");
-            });
+            SPSecurity.RunWithElevatedPrivileges(() => 
+                lac = webApplication.GetChild<LiveAuthConfiguration>("LiveAuthConfiguration")
+                );
             return lac;
         }
         public static LiveAuthConfiguration CreateNew(SPWebApplication webApplication) {
