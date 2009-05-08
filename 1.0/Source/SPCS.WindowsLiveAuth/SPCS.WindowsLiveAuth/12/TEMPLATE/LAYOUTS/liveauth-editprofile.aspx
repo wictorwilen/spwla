@@ -7,6 +7,9 @@
 <%@ Register TagPrefix="wssuc" TagName="InputFormControl" Src="/_controltemplates/InputFormControl.ascx" %>
 <%@ Register TagPrefix="wssuc" TagName="ButtonSection" Src="/_controltemplates/ButtonSection.ascx" %>
 <%@ Register TagPrefix="wssuc" TagName="ToolBar" Src="/_controltemplates/ToolBar.ascx" %>
+<%@ Register TagPrefix="wssuc" TagName="ToolBarButton" src="~/_controltemplates/ToolBarButton.ascx" %>
+<%@ Register TagPrefix="wl" Namespace="SPCS.WindowsLiveAuth" Assembly="SPCS.WindowsLiveAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4b37e1a71dac8e81"%>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="PlaceHolderPageTitle" runat="server">
     Edit your profile
 </asp:Content>
@@ -22,10 +25,13 @@
         <tr>
             <td>
                 <span id='part1'>
-                    <wssuc:ToolBar CssClass="ms-formtoolbar" id="toolBarTbltop" RightButtonSeparator="&nbsp;"
+                    <wssuc:ToolBar  id="toolBarTbltop" RightButtonSeparator="&nbsp;"
                         runat="server">
+                                 <template_buttons>
+                         
+                    </template_buttons>
                         <template_rightbuttons>
-                          <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Submit" id="butSubmit2" />
+                          <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Save" id="butSubmit2" />
                         </template_rightbuttons>
                     </wssuc:ToolBar>
                     
@@ -126,6 +132,17 @@
             </wssuc:InputFormControl>
         </template_inputformcontrols>
                         </wssuc:InputFormSection>
+                        
+                           <wssuc:InputFormSection runat="server" Title="" id="winlive" Visible="True">
+                            <template_description>
+            <b>Windows Live</b>
+        </template_description>
+                            <template_inputformcontrols>
+         
+						<wl:CurrentUserLivePresenceControl runat="server" ShowLink="true"/>
+        </template_inputformcontrols>
+                        </wssuc:InputFormSection>
+                         
                     </table>
                     <table cellpadding="0" cellspacing="0" width="100%">
                         <tr>
@@ -138,13 +155,13 @@
                         <tr>
                             <td width="100%">
                                 
-                                <wssuc:ToolBar CssClass="ms-formtoolbar" id="toolBarTbl" RightButtonSeparator="&nbsp;"
+                                <wssuc:ToolBar id="toolBarTbl" RightButtonSeparator="&nbsp;"
                                     runat="server">
                                     <template_buttons>
                                     
                                 </template_buttons>
                                     <template_rightbuttons>
-                                    <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Submit" id="butSubmit" />
+                                    <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Save" id="butSubmit" />
                                 </template_rightbuttons>
                                 </wssuc:ToolBar>
                             </td>

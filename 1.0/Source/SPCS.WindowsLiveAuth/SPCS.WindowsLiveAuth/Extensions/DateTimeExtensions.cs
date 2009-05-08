@@ -13,16 +13,17 @@
  * 
  */
 using System;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth
 {
     public static class DateTimeExtensions {
 
-        public static DateTime? ParseNull(object o) {
-            if (o == null) {
+        public static DateTime? ParseNull(object value) {
+            if (value == null) {
                 return null;
             }
-            return DateTime.Parse(o.ToString());
+            return DateTime.Parse(value.ToString(), CultureInfo.InvariantCulture);
         }
     }
 }

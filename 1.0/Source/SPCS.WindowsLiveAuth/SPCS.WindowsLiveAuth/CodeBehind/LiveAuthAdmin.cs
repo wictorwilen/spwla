@@ -21,11 +21,11 @@ namespace SPCS.WindowsLiveAuth {
     public partial class LiveAuthAdmin: System.Web.UI.Page {
 
         protected CheckBox cbEnable;
-        protected TextBox tbAnnouncementList;
         protected CheckBox cbNewProfiles;
         protected CheckBox cbProfileUpdates;
         protected ValidationSummary ValSummary;
         protected Label LabelErrorMessage;
+        protected DropDownList ddAnnouncementList;
 
         private void Page_Load(object sender, System.EventArgs e) {
             if (!SPContext.Current.Web.UserIsSiteAdmin) {
@@ -37,6 +37,11 @@ namespace SPCS.WindowsLiveAuth {
                 LabelErrorMessage.Text = "Windows Live ID not configured for this Web Application";
                 return;
             }
+            foreach (SPList list in SPContext.Current.Web.Lists) {
+                if (list.Fields.ContainsField("Body") && list.Fields.ContainsField("Expires")) {
+                    ddAnnouncementList.Items.Add(new ListItem(list.Title));
+                }
+            }
             if (!this.IsPostBack) {
                 SPSecurity.RunWithElevatedPrivileges(delegate() {
                     using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
@@ -45,27 +50,25 @@ namespace SPCS.WindowsLiveAuth {
                                 LabelErrorMessage.Text = "Could not locate profile sync list, reconfigure your Windows Live ID settings";
                             }
                             else {
-                                web.AllowUnsafeUpdates = true;
                                 SPList list = web.Lists[settings.SiteSyncListName];
                                 foreach (SPListItem item in list.Items) {
-                                    using (SPSite syncedSite = new SPSite(item["Url"].ToString())) {
-                                        if(syncedSite.ID == SPContext.Current.Site.ID) {
-                                            cbEnable.Checked = item.GetListItemBool("EnableAnnouncements");
-                                            tbAnnouncementList.Text = item.GetListItemString("AnnouncementList");
-                                            cbNewProfiles.Checked = item.GetListItemBool("NewProfileInfo");
-                                            cbProfileUpdates.Checked = item.GetListItemBool("ProfileUpdateInfo");
-                                            break;
+                                    if (item.Contains("Url")) {
+                                        using (SPSite syncedSite = new SPSite(item["Url"].ToString())) {
+                                            if (syncedSite.ID == SPContext.Current.Site.ID) {
+                                                cbEnable.Checked = item.GetListItemBool("EnableAnnouncements");
+                                                ddAnnouncementList.SelectedValue = item.GetListItemString("AnnouncementList");
+                                                cbNewProfiles.Checked = item.GetListItemBool("NewProfileInfo");
+                                                cbProfileUpdates.Checked = item.GetListItemBool("ProfileUpdateInfo");
+                                                break;
+                                            }
                                         }
-                                    }
-                                    
+                                    }                                    
                                 }
                             }
-
                         }
                     }
                 });
-            }
-        
+            }        
         }
 
 
@@ -86,13 +89,15 @@ namespace SPCS.WindowsLiveAuth {
                             web.AllowUnsafeUpdates = true;
                             SPList list = web.Lists[settings.SiteSyncListName];
                             foreach (SPListItem item in list.Items) {
-                                if (item["Url"].ToString() == SPContext.Current.Site.Url) {
-                                    item["EnableAnnouncements"] = cbEnable.Checked;
-                                    item["AnnouncementList"] = tbAnnouncementList.Text;
-                                    item["NewProfileInfo"] = cbNewProfiles.Checked;
-                                    item["ProfileUpdateInfo"] = cbProfileUpdates.Checked;
-                                    item.Update();
-                                    break;
+                                using (SPSite syncedSite = new SPSite(item["Url"].ToString())) {
+                                    if (syncedSite.ID == SPContext.Current.Site.ID) {
+                                        item["EnableAnnouncements"] = cbEnable.Checked;
+                                        item["AnnouncementList"] = ddAnnouncementList.SelectedValue;
+                                        item["NewProfileInfo"] = cbNewProfiles.Checked;
+                                        item["ProfileUpdateInfo"] = cbProfileUpdates.Checked;
+                                        item.Update();
+                                        break;
+                                    }
                                 }
                             }
                         }

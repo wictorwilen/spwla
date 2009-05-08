@@ -32,76 +32,89 @@ namespace SPCS.WindowsLiveAuth {
             get { return false; }
         }
 
-        public void ProcessRequest(HttpContext context) {
+        public void ProcessRequest(HttpContext context)
+        {
             string uuid = context.Request["uuid"];
-            if (string.IsNullOrEmpty(uuid)) {
+            if (string.IsNullOrEmpty(uuid))
+            {
                 emptyGif(context);
                 return;
             }
             LiveCommunityUser lcu = LiveCommunityUser.GetUser(uuid);
-            if (lcu == null) {
+            if (lcu == null)
+            {
                 emptyGif(context);
                 return;
             }
 
-            int size = 100;
-            if (!string.IsNullOrEmpty(context.Request.QueryString["s"])) {
+            int size;
+            if (!string.IsNullOrEmpty(context.Request.QueryString["s"]))
                 size = int.Parse(context.Request.QueryString["s"]);
-            }
+            else
+                size = 100;
 
-            MemoryStream stream = new MemoryStream();
-            lcu.GetImage(stream);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                lcu.GetImage(stream);
 
-            if (stream == null || stream.Length == 0) {
-                SPSecurity.RunWithElevatedPrivileges(delegate() {
-                    // need to run this using elev since SPUtility.GetGenericSetupPath() makes a registry read!
-                    using (FileStream from = System.IO.File.Open(
-                                                Path.Combine(
-                                                    SPUtility.GetGenericSetupPath(@"TEMPLATE\IMAGES\SPCS.WindowsLiveAuth"),
-                                                    "person.png"),
-                                                FileMode.Open)) {
-                        int readCount;
-                        byte[] buffer = new byte[1024];
-                        while ((readCount = from.Read(buffer, 0, 1024)) != 0) {
-                            stream.Write(buffer, 0, readCount);
+                if (stream == null || stream.Length == 0)
+                {
+                    SPSecurity.RunWithElevatedPrivileges(delegate()
+                    {
+                        // need to run this using elev since SPUtility.GetGenericSetupPath() makes a registry read!
+                        using (FileStream from = File.Open(
+                                                    Path.Combine(
+                                                        SPUtility.GetGenericSetupPath(@"TEMPLATE\IMAGES\SPCS.WindowsLiveAuth"),
+                                                        "person.png"),
+                                                    FileMode.Open))
+                        {
+                            int readCount;
+                            byte[] buffer = new byte[1024];
+                            while ((readCount = from.Read(buffer, 0, 1024)) != 0)
+                            {
+                                stream.Write(buffer, 0, readCount);
+                            }
+
                         }
+                    });
+                }
 
-                    }
-                });
-            }
+                if (stream != null)
+                {
+                    if (stream.Length > 0)
+                    {
+                        context.Response.ContentType = "image/png";
+                        context.Response.Cache.SetExpires(DateTime.Now.AddSeconds(60));
+                        context.Response.Cache.SetCacheability(HttpCacheability.Public);
 
-            if (stream != null) {
-                if (stream.Length > 0) {                
-                    context.Response.ContentType = "image/png";
-                    context.Response.Cache.SetExpires(DateTime.Now.AddSeconds(60));
-                    context.Response.Cache.SetCacheability(HttpCacheability.Public);
+                        stream.Position = 0;
+                        using (System.Drawing.Image image = System.Drawing.Image.FromStream(stream, true, true))
+                        {
+                            using (System.Drawing.Image thumbnail = new System.Drawing.Bitmap(size, size))
+                            {
+                                using (System.Drawing.Graphics gfx = System.Drawing.Graphics.FromImage(thumbnail))
+                                {
 
-                    stream.Position = 0;
-                    using (System.Drawing.Image image = System.Drawing.Image.FromStream(stream, true, true)) {
-                        using (System.Drawing.Image thumbnail = new System.Drawing.Bitmap(size, size)) {
-                            using (System.Drawing.Graphics gfx = System.Drawing.Graphics.FromImage(thumbnail)) {
+                                    gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                    gfx.SmoothingMode = SmoothingMode.HighQuality;
+                                    gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                    gfx.CompositingQuality = CompositingQuality.HighQuality;
 
-                                gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                                gfx.SmoothingMode = SmoothingMode.HighQuality;
-                                gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                gfx.CompositingQuality = CompositingQuality.HighQuality;
+                                    gfx.DrawImage(image, 0, 0, size, size);
 
-                                gfx.DrawImage(image, 0, 0, size, size);
-
-                                MemoryStream ms = new MemoryStream();
-
-                                thumbnail.Save(context.Response.OutputStream, ImageFormat.Png);
+                                    thumbnail.Save(context.Response.OutputStream, ImageFormat.Png);
 
 
+                                }
                             }
                         }
+                        context.Response.End();
+                        return;
                     }
-                    context.Response.End();
-                    return;
+
                 }
-                
             }
-            
+
         }
 
         private static void emptyGif(HttpContext context) {

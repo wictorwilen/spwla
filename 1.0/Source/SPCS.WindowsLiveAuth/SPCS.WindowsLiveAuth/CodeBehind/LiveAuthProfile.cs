@@ -39,6 +39,8 @@ namespace SPCS.WindowsLiveAuth {
 
 
 
+        protected HyperLink delauth;
+        protected Image messengerstatus;
 
         /// <summary>
         /// Gets an application verifier.
@@ -61,12 +63,19 @@ namespace SPCS.WindowsLiveAuth {
                 redir = SPContext.Current.Web.Url;
             }
 
+            LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
+            WindowsLive.WindowsLiveLogin wll = new WindowsLiveLogin(settings.ApplicationId, settings.ApplicationKey, settings.ApplicationAlgorithm, false, string.Empty);
+
+           
+            
             if (User.Identity.IsAuthenticated) {
                 if (!IsPostBack) {
                     string uuid = Request.QueryString["uuid"];
                     string id = Request.QueryString["id"];
                     LiveCommunityUser lcu;
                     LiveCommunityUser currentUser = LiveCommunityUser.GetUser(User.Identity.Name);
+                    
+
                     if (!string.IsNullOrEmpty(uuid)) {
                         lcu = LiveCommunityUser.GetUser(uuid);
                     }
@@ -77,8 +86,8 @@ namespace SPCS.WindowsLiveAuth {
                     else {
                         lcu = currentUser;
                     }
-                    if (lcu!= null || currentUser == null || lcu.Id != currentUser.Id) {
-                        // TODO
+                    if (lcu== null || (lcu!= null && lcu.Id != currentUser.Id)) {
+                        tbbEdit.Visible = false;
                     }
                     if (lcu != null) {
                         LabelTitle.Text = lcu.DisplayName;

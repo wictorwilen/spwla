@@ -42,7 +42,7 @@
     </table>
     <input type="hidden" id="HidVirtualServerUrl" runat="server">
     <table border="0" cellspacing="0" cellpadding="0" width="100%">
-        <wssuc:InputFormSection runat="server" Title="Announcements" Description="Enable announcements for Windows Live ID profile changes" >
+        <wssuc:InputFormSection runat="server" Title="Announcements" Description="Enable announcements for Windows Live ID profile changes. Available lists are lists having a 'Body' and an 'Expires' field. If the list contains an 'Image' field, profile images will be published also." >
             <Template_InputFormControls>
                 <wssuc:InputFormControl runat="server" LabelText="Enable" Visible="True">
                     <Template_Control>
@@ -51,7 +51,7 @@
                 </wssuc:InputFormControl>
                 <wssuc:InputFormControl runat="server" LabelText="Announcement list" Visible="True">
                     <Template_Control>
-                        <asp:TextBox id="tbAnnouncementList" runat="server" CssClass="ms-input" />
+                        <asp:DropDownList id="ddAnnouncementList" runat="server" CssClass="ms-input" />
                     </Template_Control>
                 </wssuc:InputFormControl>
                 <wssuc:InputFormControl runat="server" LabelText="New profiles" Visible="True">

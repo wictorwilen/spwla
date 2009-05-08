@@ -39,10 +39,11 @@ namespace SPCS.WindowsLiveAuth {
         protected InputFormTextBox tbCountry;
         protected FileUpload fileupload;
         protected Image userpicture;
-        
+        protected ToolBarButton tbbDelegated;
 
-        
-        private void Page_Load(object sender, System.EventArgs e) {
+
+
+        private void Page_Load(object sender, EventArgs e) {
             redir = Request.QueryString["Source"];
 
             if (string.IsNullOrEmpty(redir)) {
@@ -50,12 +51,20 @@ namespace SPCS.WindowsLiveAuth {
             }
 
             if (User.Identity.IsAuthenticated) {
+
+                /*LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
+                WindowsLive.WindowsLiveLogin wll = new WindowsLiveLogin(settings.ApplicationId, settings.ApplicationKey, settings.ApplicationAlgorithm, false, string.Empty);
+                tbbDelegated.Visible = settings.UseDelegatedAuth;
+                wll.PolicyUrl = settings.PolicyPage;
+                tbbDelegated.NavigateUrl = wll.GetConsentUrl("IMControl.IMAllowAll", this.Page.Request.Url.ToString(), String.Format(@"{0}/_layouts/liveauth-handler.ashx", this.Page.Request.Url.GetLeftPart(UriPartial.Authority)));
+                */
+
                 if (!IsPostBack) {
                     string uuid = Request.QueryString["uuid"];
                     string id = Request.QueryString["id"];
-                   
+
                     LiveCommunityUser lcu = LiveCommunityUser.GetUser(User.Identity.Name);
-                                 
+
                     if (lcu != null) {
                         tbDisplayName.Text = lcu.DisplayName;
                         tbEmail.Text = lcu.Email;
@@ -98,25 +107,33 @@ namespace SPCS.WindowsLiveAuth {
                         using (System.Drawing.Image image = System.Drawing.Image.FromStream(fileupload.FileContent, true, true)) {
                             using (System.Drawing.Image thumbnail = new System.Drawing.Bitmap(size, size)) {
                                 using (System.Drawing.Graphics gfx = System.Drawing.Graphics.FromImage(thumbnail)) {
-                                
+                                    int width = image.Width;
+                                    int height = image.Height;
+                                    if (width > height) {
+                                        height = size * height / width;
+                                        width = size;
+                                    }
+                                    else {
+                                        width = size * width  / height;
+                                        height = size;
+                                    }
                                     gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
                                     gfx.SmoothingMode = SmoothingMode.HighQuality;
                                     gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
                                     gfx.CompositingQuality = CompositingQuality.HighQuality;
+                                    gfx.FillRectangle(System.Drawing.Brushes.White, 0, 0, size, size);
+                                    gfx.DrawImage(image, 0, 0,width,height);
 
-                                    gfx.DrawImage(image, 0, 0, size,size);
-                                    
-                                    MemoryStream ms = new MemoryStream();
-                                    
-                                    thumbnail.Save(ms, ImageFormat.Png);
-                                    
-                                    lcu.SetImage(ms.GetBuffer());
+                                    using (MemoryStream ms = new MemoryStream()) {
+                                        thumbnail.Save(ms, ImageFormat.Png);
+                                        lcu.SetImage(ms.GetBuffer());
+                                    }
                                 
                                 }
                             }
                         }
                     }
-                    catch (Exception ex) {
+                    catch (Exception) {
                         
                     }
                 }
@@ -140,7 +157,7 @@ namespace SPCS.WindowsLiveAuth {
 
                 // Make sure that the user exists in SharePoint also
                 // EventHandler will then update the user info after lcu.Update
-                SPSecurity.RunWithElevatedPrivileges(delegate() {
+                SPSecurity.RunWithElevatedPrivileges(() => {
                     using (SPSite site = new SPSite(SPContext.Current.Web.Url)) {
                         using (SPWeb web = site.RootWeb) {
                             web.AllowUnsafeUpdates = true;

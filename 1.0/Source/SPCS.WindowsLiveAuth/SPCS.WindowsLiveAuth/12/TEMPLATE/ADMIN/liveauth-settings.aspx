@@ -42,6 +42,7 @@
         <tr> 
             <td class="ms-descriptionText"> 
                 <asp:ValidationSummary ID="ValSummary" ValidationGroup="valgroup1" HeaderText="<%$SPHtmlEncodedResources:spadmin, ValidationSummaryHeaderText%>" DisplayMode="BulletList" ShowSummary="True" runat="server"> </asp:ValidationSummary> 
+                <asp:ValidationSummary ID="ValSummary2" ValidationGroup="valgroup2" HeaderText="<%$SPHtmlEncodedResources:spadmin, ValidationSummaryHeaderText%>" DisplayMode="BulletList" ShowSummary="True" runat="server"> </asp:ValidationSummary> 
             </td> 
         </tr> 
         <tr> 
@@ -80,14 +81,14 @@
                 Enter the Windows Live ID settings that you get from the Windows Live ID configuration portal.
             </Template_Description>
             <Template_InputFormControls>
-                <wssuc:InputFormControl runat="server" LabelText="Application Id" Visible="True">
+                <wssuc:InputFormControl runat="server" LabelText="Application ID" Visible="True">
                     <Template_Control>
                         <asp:TextBox id="tbApplicationId" runat="server" CssClass="ms-input"/>
                         <asp:RequiredFieldValidator runat="server" id="tbApplicationIdReq" ControlToValidate="tbApplicationId" Text="*" ErrorMessage="Application Id Required"  ValidationGroup="valgroup1" EnableClientScript="false"/>
                     </Template_Control>
                 </wssuc:InputFormControl>
             
-                <wssuc:InputFormControl runat="server" LabelText="Application Key" Visible="True">
+                <wssuc:InputFormControl runat="server" LabelText="Secret Key" Visible="True">
                     <Template_Control>
                         <asp:TextBox id="tbApplicationKey" runat="server" CssClass="ms-input"/>
                         <asp:RequiredFieldValidator runat="server" id="tbApplicationKeyReq" ControlToValidate="tbApplicationKey" Text="*" ErrorMessage="Application Key Required"  ValidationGroup="valgroup1" EnableClientScript="false"/>
@@ -152,6 +153,18 @@
                 <wssuc:InputFormControl runat="server" LabelText="Use HTTPS" Visible="True">
                     <Template_Control>
                         <asp:CheckBox ID="cbHttps" runat="server" Text="" />
+                    </Template_Control>
+                </wssuc:InputFormControl>
+                
+                <wssuc:InputFormControl runat="server" LabelText="Enable Delegated Authentication" Visible="True">
+                    <Template_Control>
+                        <asp:CheckBox ID="cbDelegated" runat="server" Text="" />
+                    </Template_Control>
+                </wssuc:InputFormControl>
+                <wssuc:InputFormControl runat="server" LabelText="Url to policy page" Visible="True">
+                    <Template_Control>
+                        <asp:TextBox ID="tbPolicyPage" runat="server" Text="" CssClass="ms-input"/>
+                        <asp:RequiredFieldValidator runat="server" id="tbPolicyPageReq" ControlToValidate="tbPolicyPage" Text="*" ErrorMessage="Policy page is required when using Delegated Authentication"  ValidationGroup="valgroup2" EnableClientScript="false"/>
                     </Template_Control>
                 </wssuc:InputFormControl>
             

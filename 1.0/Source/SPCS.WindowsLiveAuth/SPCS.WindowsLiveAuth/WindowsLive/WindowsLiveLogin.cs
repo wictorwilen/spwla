@@ -32,7 +32,7 @@ namespace WindowsLive
     /// protocol. Also includes trusted sign-in and application 
     /// verification sample implementations.
     /// </summary>
-    public class WindowsLiveLogin
+    public partial class WindowsLiveLogin
     {
         /// <summary>
         /// Stub implementation for logging debug output. You can run
@@ -553,6 +553,7 @@ namespace WindowsLive
             { 
                 if (string.IsNullOrEmpty(consentUrl))
                 {
+                    //return "http://consent.messenger.services.live.com/";
                     return "https://consent.live.com/";
                 }
 
