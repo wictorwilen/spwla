@@ -338,7 +338,7 @@ namespace SPCS.WindowsLiveAuth {
                                         uItem["Title"] = user.DisplayName;
                                         uItem["EMail"] = user.Email;
                                         uItem["Notes"] = user.Description;
-                                        uItem["Picture"] = sweb.Url + user.ImageUrl;
+                                        uItem["Picture"] = settings.Domain.TrimEnd(new char[] {'/'}) + user.ImageUrl;
                                         uItem["Department"] = user.Company;
                                         uItem["JobTitle"] = user.Title;
                                         uItem["SipAddress"] = user.SipAddress;

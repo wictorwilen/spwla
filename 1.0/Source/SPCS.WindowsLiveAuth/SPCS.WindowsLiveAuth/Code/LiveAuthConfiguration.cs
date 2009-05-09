@@ -31,7 +31,9 @@ namespace SPCS.WindowsLiveAuth {
         public string ApplicationKey;
 
 
-        
+        [Persisted]
+        public string Domain;
+
         [Persisted]
         public LiveAuthApplicationMode ApplicationMode;
         
