@@ -83,14 +83,14 @@
             <Template_InputFormControls>
                 <wssuc:InputFormControl runat="server" LabelText="Application ID" Visible="True">
                     <Template_Control>
-                        <asp:TextBox id="tbApplicationId" runat="server" CssClass="ms-input"/>
+                        <asp:TextBox id="tbApplicationId" runat="server" CssClass="ms-input" Width="250px"/>
                         <asp:RequiredFieldValidator runat="server" id="tbApplicationIdReq" ControlToValidate="tbApplicationId" Text="*" ErrorMessage="Application Id Required"  ValidationGroup="valgroup1" EnableClientScript="false"/>
                     </Template_Control>
                 </wssuc:InputFormControl>
             
                 <wssuc:InputFormControl runat="server" LabelText="Secret Key" Visible="True">
                     <Template_Control>
-                        <asp:TextBox id="tbApplicationKey" runat="server" CssClass="ms-input"/>
+                        <asp:TextBox id="tbApplicationKey" runat="server" CssClass="ms-input" Width="250px"/>
                         <asp:RequiredFieldValidator runat="server" id="tbApplicationKeyReq" ControlToValidate="tbApplicationKey" Text="*" ErrorMessage="Application Key Required"  ValidationGroup="valgroup1" EnableClientScript="false"/>
                     </Template_Control>
                 </wssuc:InputFormControl>
@@ -103,14 +103,20 @@
                 TODO
             </Template_Description>
             <Template_InputFormControls>
+                <wssuc:InputFormControl runat="server" LabelText="Domain" Visible="True">
+                    <Template_Control>
+                        <asp:TextBox id="tbDomain" runat="server" CssClass="ms-input" Width="250px"/>
+                        <asp:RequiredFieldValidator runat="server" id="tbDomainReq" ControlToValidate="tbDomain" Text="*" ErrorMessage="Domain needs to be specified"  ValidationGroup="valgroup1" EnableClientScript="false"/>
+                    </Template_Control>
+                </wssuc:InputFormControl>
                 <wssuc:InputFormControl runat="server" LabelText="Create/overwrite Windows Live ID Profile lists" Visible="True">
                     <Template_Control>
                         <asp:CheckBox ID="cbCreateLists" runat="server" Text="" />
                     </Template_Control>
                 </wssuc:InputFormControl>
-                <wssuc:InputFormControl runat="server" LabelText="Profile Site Url" Visible="True">
+                <wssuc:InputFormControl runat="server" LabelText="Profile Site Url" Visible="True" >
                     <Template_Control>
-                        <asp:TextBox id="tbProfileSiteUrl" runat="server" CssClass="ms-input"/>
+                        <asp:TextBox id="tbProfileSiteUrl" runat="server" CssClass="ms-input" Width="250px"/>
                         <asp:RequiredFieldValidator runat="server" id="tbProfileSiteUrlReq" ControlToValidate="tbProfileSiteUrl" Text="*" ErrorMessage="Profile Site Url required"  ValidationGroup="valgroup1" EnableClientScript="false"/>
                     </Template_Control>
                 </wssuc:InputFormControl>
@@ -131,7 +137,7 @@
                 
                 <wssuc:InputFormControl runat="server" LabelText="Url for locked accounts" Visible="True">
                     <Template_Control>
-                        <asp:TextBox id="tbLockedUrl" runat="server" CssClass="ms-input"/>
+                        <asp:TextBox id="tbLockedUrl" runat="server" CssClass="ms-input" Width="250px"/>
                     </Template_Control>
                 </wssuc:InputFormControl>
                 
@@ -163,7 +169,7 @@
                 </wssuc:InputFormControl>
                 <wssuc:InputFormControl runat="server" LabelText="Url to policy page" Visible="True">
                     <Template_Control>
-                        <asp:TextBox ID="tbPolicyPage" runat="server" Text="" CssClass="ms-input"/>
+                        <asp:TextBox ID="tbPolicyPage" runat="server" Text="" CssClass="ms-input" Width="250px"/>
                         <asp:RequiredFieldValidator runat="server" id="tbPolicyPageReq" ControlToValidate="tbPolicyPage" Text="*" ErrorMessage="Policy page is required when using Delegated Authentication"  ValidationGroup="valgroup2" EnableClientScript="false"/>
                     </Template_Control>
                 </wssuc:InputFormControl>

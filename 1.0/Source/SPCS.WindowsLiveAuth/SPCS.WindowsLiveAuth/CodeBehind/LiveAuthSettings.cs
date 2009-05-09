@@ -47,6 +47,7 @@ namespace SPCS.WindowsLiveAuth {
         protected ValidationSummary ValSummary;
         protected CheckBox cbDelegated;
         protected TextBox tbPolicyPage;
+        protected TextBox tbDomain;
 
 
         private void Page_Load(object sender, System.EventArgs e) {
@@ -77,6 +78,7 @@ namespace SPCS.WindowsLiveAuth {
             cbApprove.Checked = true;
             cbDelegated.Checked = false;
             tbPolicyPage.Text = string.Empty;
+            tbDomain.Text = string.Empty;
 
             // delete providers
             removeProviders(Selector.CurrentItem);
@@ -104,6 +106,7 @@ namespace SPCS.WindowsLiveAuth {
                 settings.AutoApprove = cbApprove.Checked;
                 settings.UseDelegatedAuth = cbDelegated.Checked;
                 settings.PolicyPage = tbPolicyPage.Text;
+                settings.Domain = tbDomain.Text;
                 settings.Update();
 
                 
@@ -190,6 +193,7 @@ namespace SPCS.WindowsLiveAuth {
                     cbApprove.Checked = settings.AutoApprove;
                     cbDelegated.Checked = settings.UseDelegatedAuth;
                     tbPolicyPage.Text = settings.PolicyPage;
+                    tbDomain.Text = settings.Domain;
                 }
                 else {
                     tbApplicationId.Text = string.Empty;
@@ -202,6 +206,7 @@ namespace SPCS.WindowsLiveAuth {
                     cbApprove.Checked = true;
                     cbDelegated.Checked = false;
                     tbPolicyPage.Text = string.Empty;
+                    tbDomain.Text = string.Empty;
                 }
             }   
         }
@@ -281,7 +286,7 @@ namespace SPCS.WindowsLiveAuth {
 
         }
 
-        private void configureProvidersForZone(SPWebApplication webApp, SPUrlZone urlZone)
+        private static void configureProvidersForZone(SPWebApplication webApp, SPUrlZone urlZone)
         {
             // make a manual change to the web.config, since the SPWebConfigModification does not support
             // zone specific changes. backside, this will not propagate to new front-ends (but just reconfigure WLA)
