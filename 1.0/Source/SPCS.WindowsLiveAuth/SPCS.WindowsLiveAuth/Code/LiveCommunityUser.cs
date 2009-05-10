@@ -363,6 +363,7 @@ namespace SPCS.WindowsLiveAuth {
         }
 
         private static bool checkUniqueEmail(SPList list, string email, string id) {
+            // TODO
             return true;
         }
         public bool Locked {

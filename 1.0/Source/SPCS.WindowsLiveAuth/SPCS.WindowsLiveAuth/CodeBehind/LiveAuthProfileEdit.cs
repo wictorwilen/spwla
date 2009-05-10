@@ -19,10 +19,9 @@ using System.Web.UI.WebControls;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Drawing.Imaging;
-using WindowsLive;
 
 namespace SPCS.WindowsLiveAuth {
-    public partial class LiveAuthProfileEdit: System.Web.UI.Page {
+    public class LiveAuthProfileEdit: System.Web.UI.Page {
 
         protected string redir;
 

@@ -13,9 +13,6 @@
  * 
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.SharePoint;
 
 namespace SPCS.WindowsLiveAuth {
@@ -42,19 +39,22 @@ namespace SPCS.WindowsLiveAuth {
 
             if (lcu != null) {
                 lcu.PushProfile(properties.OpenWeb());
-                
-                if(DateTimeExtensions.ParseNull(properties.BeforeProperties["LastLogin"]) == DateTimeExtensions.ParseNull(properties.AfterProperties["LastLogin"]) ) {
+
+
+                DateTime? ll = DateTimeExtensions.ParseNull(properties.AfterProperties["LastLogin"]);
+                if(ll != null && ll.Value.AddSeconds(5) < DateTime.Now) {                
                     // Create profile announcement, but not when the user logs in
-                    string title = string.Format("Profile updated for {0}", lcu.DisplayName);
-                    string body = string.Format("The profile for <b><a href='/_layouts/liveauth-profile.aspx?uuid={0}'>{1}</a></b> is updated", lcu.Id, lcu.DisplayName);
-                    string image = string.Format("/_layouts/liveauth-image.ashx?uuid={0}&s=40", lcu.Id);
-                    createAnnouncement(spWeb, title, body, image);
+                    return;
                 }
+                string title = string.Format("Profile updated for {0}", lcu.DisplayName);
+                string body = string.Format("The profile for <b><a href='/_layouts/liveauth-profile.aspx?uuid={0}'>{1}</a></b> is updated", lcu.Id, lcu.DisplayName);
+                string image = string.Format("/_layouts/liveauth-image.ashx?uuid={0}&s=40", lcu.Id);
+                createAnnouncement(spWeb, title, body, image);
             }
 
             
         }
-        void createAnnouncement(SPWeb spWeb, string title, string body, string image) {
+        static void createAnnouncement(SPWeb spWeb, string title, string body, string image) {
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(spWeb.Site.WebApplication);
             if (settings != null) {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {

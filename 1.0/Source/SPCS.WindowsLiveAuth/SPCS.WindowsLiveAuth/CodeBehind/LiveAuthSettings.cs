@@ -148,6 +148,7 @@ namespace SPCS.WindowsLiveAuth {
             }
         }
 
+        // TODO: look into this
         private static void applyWebConfigModifications(SPWebApplication webApp) {
             try {
                 webApp.WebService.ApplyWebConfigModifications();
