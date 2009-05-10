@@ -20,6 +20,17 @@ using System;
 namespace SPCS.WindowsLiveAuth {
     [ToolboxData("<{0}:LiveCommunityUserControl runat=server></{0}:LiveCommunityUserControl>")]
     public class LiveCommunityUserControl : WebControl {
+        public LiveCommunityUserControl() {
+            
+        }
+        public LiveCommunityUserControl(HtmlTextWriterTag tag)
+            : base(tag) {
+            
+        }
+        protected LiveCommunityUserControl(string tag)
+            : base(tag) {
+            
+        }
    
         
         [Bindable(true)]

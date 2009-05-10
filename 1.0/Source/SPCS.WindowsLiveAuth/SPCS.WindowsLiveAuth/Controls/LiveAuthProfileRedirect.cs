@@ -19,6 +19,9 @@ using System;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthProfileRedirect: SPControl {
+        public LiveAuthProfileRedirect() {
+            
+        }
         protected override void Render(System.Web.UI.HtmlTextWriter writer) {
             // redirect if WLA installed and WLA account and if Forms auth is used on the site
             if (SPSecurity.AuthenticationMode == System.Web.Configuration.AuthenticationMode.Forms) {

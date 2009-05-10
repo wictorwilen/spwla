@@ -14,7 +14,7 @@ namespace SPCS.WindowsLiveAuth {
         /// <summary>
         /// Initializes a new instance of the LivePresenceImage class.
         /// </summary>
-        public LivePresenceImage(): base() {
+        public LivePresenceImage() {
         }
 
         [Category("Data")]

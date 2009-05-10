@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Microsoft.SharePoint;
@@ -15,8 +11,7 @@ namespace SPCS.WindowsLiveAuth {
     public class CurrentUserLivePresenceControl : PlaceHolder {
 
 
-        public CurrentUserLivePresenceControl()
-            : base() {
+        public CurrentUserLivePresenceControl() {
             
         }
                             

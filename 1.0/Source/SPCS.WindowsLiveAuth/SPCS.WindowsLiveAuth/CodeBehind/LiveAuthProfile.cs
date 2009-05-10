@@ -20,7 +20,7 @@ using System.Web.UI;
 using WindowsLive;
 
 namespace SPCS.WindowsLiveAuth {
-    public partial class LiveAuthProfile: System.Web.UI.Page {
+    public class LiveAuthProfile: System.Web.UI.Page {
 
         protected string redir;
         protected Label LabelTitle;
@@ -55,26 +55,26 @@ namespace SPCS.WindowsLiveAuth {
         //    }
         //}
 
-        
+
         private void Page_Load(object sender, System.EventArgs e) {
             redir = Request.QueryString["Source"];
-            
+
             if (string.IsNullOrEmpty(redir)) {
                 redir = SPContext.Current.Web.Url;
             }
 
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
-            WindowsLive.WindowsLiveLogin wll = new WindowsLiveLogin(settings.ApplicationId, settings.ApplicationKey, settings.ApplicationAlgorithm, false, string.Empty);
+            WindowsLiveLogin wll = new WindowsLiveLogin(settings.ApplicationId, settings.ApplicationKey, settings.ApplicationAlgorithm, false, string.Empty);
 
-           
-            
+
+
             if (User.Identity.IsAuthenticated) {
                 if (!IsPostBack) {
                     string uuid = Request.QueryString["uuid"];
                     string id = Request.QueryString["id"];
                     LiveCommunityUser lcu;
                     LiveCommunityUser currentUser = LiveCommunityUser.GetUser(User.Identity.Name);
-                    
+
 
                     if (!string.IsNullOrEmpty(uuid)) {
                         lcu = LiveCommunityUser.GetUser(uuid);
@@ -86,24 +86,30 @@ namespace SPCS.WindowsLiveAuth {
                     else {
                         lcu = currentUser;
                     }
-                    if (lcu== null || (lcu!= null && lcu.Id != currentUser.Id)) {
+                    if (lcu == null || (lcu != null && lcu.Id != currentUser.Id)) {
                         tbbEdit.Visible = false;
                     }
                     if (lcu != null) {
                         LabelTitle.Text = lcu.DisplayName;
                         lblDisplayName.Text = lcu.DisplayName;
-                        hlEmail.NavigateUrl = "mailto:" + lcu.Email;
+                        hlEmail.NavigateUrl = String.Format("mailto:{0}", lcu.Email);
                         hlEmail.Text = lcu.Email;
                         lbAbout.Controls.Add(new LiteralControl(lcu.Description));
                         imImage.ImageUrl = string.Format("/_layouts/liveauth-image.ashx?uuid={0}&s=60", lcu.Id);
                         lbCompany.Text = lcu.Company;
                         lbTitle.Text = lcu.Title;
-                        hlFeed.NavigateUrl = lcu.FeedUrl;
-                        hlFeed.Text = lcu.FeedUrl;
-                        hlTwitter.NavigateUrl = "http://twitter.com/" + lcu.TwitterAccount;
-                        hlTwitter.Text = "http://twitter.com/" + lcu.TwitterAccount;
-                        hlWebsite.NavigateUrl = lcu.HomePageUrl;
-                        hlWebsite.Text = lcu.HomePageUrl;
+                        if (!string.IsNullOrEmpty(lcu.FeedUrl)) {
+                            hlFeed.NavigateUrl = lcu.FeedUrl;
+                            hlFeed.Text = lcu.FeedUrl;
+                        }
+                        if (!string.IsNullOrEmpty(lcu.TwitterAccount)) {
+                            hlTwitter.NavigateUrl = String.Format("http://twitter.com/{0}", lcu.TwitterAccount);
+                            hlTwitter.Text = String.Format("http://twitter.com/{0}", lcu.TwitterAccount);
+                        }
+                        if (!string.IsNullOrEmpty(lcu.HomePageUrl)) {
+                            hlWebsite.NavigateUrl = lcu.HomePageUrl;
+                            hlWebsite.Text = lcu.HomePageUrl;
+                        }
                         lbCountry.Text = lcu.Country;
                         lbCity.Text = lcu.City;
                     }

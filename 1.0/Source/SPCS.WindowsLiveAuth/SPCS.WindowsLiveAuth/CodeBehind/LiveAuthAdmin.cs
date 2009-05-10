@@ -18,7 +18,7 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
 
 namespace SPCS.WindowsLiveAuth {
-    public partial class LiveAuthAdmin: System.Web.UI.Page {
+    public class LiveAuthAdmin: System.Web.UI.Page {
 
         protected CheckBox cbEnable;
         protected CheckBox cbNewProfiles;
@@ -43,16 +43,15 @@ namespace SPCS.WindowsLiveAuth {
                 }
             }
             if (!this.IsPostBack) {
-                SPSecurity.RunWithElevatedPrivileges(delegate() {
+                SPSecurity.RunWithElevatedPrivileges(() => {
                     using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                         using (SPWeb web = site.OpenWeb()) {
-                            if (!web.ListExists(settings.SiteSyncListName)) {
+                            if (!web.ListExists(settings.SiteSyncListName))
                                 LabelErrorMessage.Text = "Could not locate profile sync list, reconfigure your Windows Live ID settings";
-                            }
                             else {
                                 SPList list = web.Lists[settings.SiteSyncListName];
-                                foreach (SPListItem item in list.Items) {
-                                    if (item.Contains("Url")) {
+                                foreach (SPListItem item in list.Items)
+                                    if (item.Contains("Url"))
                                         using (SPSite syncedSite = new SPSite(item["Url"].ToString())) {
                                             if (syncedSite.ID == SPContext.Current.Site.ID) {
                                                 cbEnable.Checked = item.GetListItemBool("EnableAnnouncements");
@@ -62,8 +61,6 @@ namespace SPCS.WindowsLiveAuth {
                                                 break;
                                             }
                                         }
-                                    }                                    
-                                }
                             }
                         }
                     }
@@ -78,17 +75,16 @@ namespace SPCS.WindowsLiveAuth {
                 LabelErrorMessage.Text = "Windows Live ID not configured for this Web Application";
                 return;
             }
-            
-            SPSecurity.RunWithElevatedPrivileges(delegate() {
+
+            SPSecurity.RunWithElevatedPrivileges(() => {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
-                        if (!web.ListExists(settings.SiteSyncListName)) {
+                        if (!web.ListExists(settings.SiteSyncListName))
                             LabelErrorMessage.Text = "Could not locate profile sync list, reconfigure your Windows Live ID settings";
-                        }
                         else {
                             web.AllowUnsafeUpdates = true;
                             SPList list = web.Lists[settings.SiteSyncListName];
-                            foreach (SPListItem item in list.Items) {
+                            foreach (SPListItem item in list.Items)
                                 using (SPSite syncedSite = new SPSite(item["Url"].ToString())) {
                                     if (syncedSite.ID == SPContext.Current.Site.ID) {
                                         item["EnableAnnouncements"] = cbEnable.Checked;
@@ -99,9 +95,7 @@ namespace SPCS.WindowsLiveAuth {
                                         break;
                                     }
                                 }
-                            }
                         }
-                        
                     }
                 }
             });

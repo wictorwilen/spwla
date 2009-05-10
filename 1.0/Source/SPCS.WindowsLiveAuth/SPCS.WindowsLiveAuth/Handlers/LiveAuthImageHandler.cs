@@ -59,22 +59,13 @@ namespace SPCS.WindowsLiveAuth {
 
                 if (stream == null || stream.Length == 0)
                 {
-                    SPSecurity.RunWithElevatedPrivileges(delegate()
-                    {
+                    SPSecurity.RunWithElevatedPrivileges(() => {
                         // need to run this using elev since SPUtility.GetGenericSetupPath() makes a registry read!
-                        using (FileStream from = File.Open(
-                                                    Path.Combine(
-                                                        SPUtility.GetGenericSetupPath(@"TEMPLATE\IMAGES\SPCS.WindowsLiveAuth"),
-                                                        "person.png"),
-                                                    FileMode.Open))
-                        {
+                        using (FileStream from = File.Open(Path.Combine(SPUtility.GetGenericSetupPath(@"TEMPLATE\IMAGES\SPCS.WindowsLiveAuth"), "person.png"), FileMode.Open)) {
                             int readCount;
                             byte[] buffer = new byte[1024];
                             while ((readCount = from.Read(buffer, 0, 1024)) != 0)
-                            {
                                 stream.Write(buffer, 0, readCount);
-                            }
-
                         }
                     });
                 }
