@@ -19,6 +19,7 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Administration;
 using System.IO;
 using System.Web;
+using SPExLib.Extensions;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveCommunityUser {
@@ -99,9 +100,9 @@ namespace SPCS.WindowsLiveAuth {
                         SPList list = web.Lists[settings.ProfileListName];
                         SPQuery query = new SPQuery();
                         if (id.IndexOf("@") != -1)
-                            query.Query = string.Format("<Where><Eq><FieldRef Name='Email'/><Value Type='Text'>{0}</Value></Eq></Where>", id);
+                            query.Query = "<Where><Eq><FieldRef Name='Email'/><Value Type='Text'>{0}</Value></Eq></Where>".FormatWith(id);
                         else
-                            query.Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id);
+                            query.Query = "<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>".FormatWith(id);
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0)
                             lcu = new LiveCommunityUser(items[0]);
@@ -155,8 +156,8 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        foreach (SPListItem item in list.Items)
-                            users.Add(new LiveCommunityUser(item));
+                        list.Items.ForEach(item => users.Add(new LiveCommunityUser(item)));
+                        
                     }
                 }
             });
@@ -331,7 +332,7 @@ namespace SPCS.WindowsLiveAuth {
                                     site.AllowUnsafeUpdates = true;
                                     sweb.AllowUnsafeUpdates = true;
                                     SPList list = sweb.Lists["User Information List"];
-                                    SPQuery query = new SPQuery { Query = string.Format("<Where><Contains><FieldRef Name='Name'/><Value Type='Text'>{0}</Value></Contains></Where>", user.Id) };
+                                    SPQuery query = new SPQuery { Query = "<Where><Contains><FieldRef Name='Name'/><Value Type='Text'>{0}</Value></Contains></Where>".FormatWith(user.Id) };
                                     SPListItemCollection items = list.GetItems(query);
                                     if (items.Count > 0) {
                                         SPListItem uItem = items[0];
@@ -363,8 +364,11 @@ namespace SPCS.WindowsLiveAuth {
         }
 
         private static bool checkUniqueEmail(SPList list, string email, string id) {
-            // TODO
-            return true;
+
+            SPQuery query = new SPQuery { Query = string.Format("<Where><And><Neq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Neq><Eq><FieldRef Name='EMail'/><Value Type='Text'>{1}</Value></Eq><And></Where>", id, email) };
+            SPListItemCollection items = list.GetItems(query);
+
+            return items.Count == 0;
         }
         public bool Locked {
             get;

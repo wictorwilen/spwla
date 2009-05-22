@@ -16,6 +16,7 @@ using System;
 using System.Web.UI.WebControls;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
+using SPExLib.Extensions;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthAdmin: System.Web.UI.Page {

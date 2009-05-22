@@ -16,6 +16,7 @@ using Microsoft.SharePoint.WebControls;
 using System.Web;
 using Microsoft.SharePoint;
 using System;
+using SPExLib.Extensions;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthProfileRedirect: SPControl {
