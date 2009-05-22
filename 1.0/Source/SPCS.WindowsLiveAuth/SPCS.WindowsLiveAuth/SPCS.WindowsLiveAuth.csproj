@@ -60,6 +60,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\..\Projects\References\SharePoint\Microsoft.SharePoint.dll</HintPath>
     </Reference>
+    <Reference Include="SPExLib, Version=1.0.0.1, Culture=neutral, PublicKeyToken=c029fa26bda69490, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\SPExLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -76,7 +81,6 @@
     <Compile Include="Controls\LivePresenceConsentLink.cs" />
     <Compile Include="Controls\CurrentUserLivePresenceControl.cs" />
     <Compile Include="Controls\LivePresenceImage.cs" />
-    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="CodeBehind\LiveAuthProfileEdit.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -99,10 +103,6 @@
     <Compile Include="Code\LiveMembershipProvider.cs" />
     <Compile Include="Code\LiveRoleProvider.cs" />
     <Compile Include="Receivers\ProfileListEventHandler.cs" />
-    <Compile Include="Extensions\SPListItemExtension.cs" />
-    <Compile Include="Extensions\SPUserExtension.cs" />
-    <Compile Include="Extensions\SPWebExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="WindowsLive\WindowsLiveLogin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebPartCode\LastLoggedInUsersWebPart.cs" />

@@ -4,6 +4,7 @@ using System.Web.UI;
 using System.ComponentModel;
 using WindowsLive;
 using Microsoft.SharePoint;
+using SPExLib.Extensions;
 
 namespace SPCS.WindowsLiveAuth {
     [ParseChildren(false)]

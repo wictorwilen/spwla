@@ -22,6 +22,7 @@ using Microsoft.SharePoint.WebControls;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml;
+using SPExLib.Extensions;
 
 namespace SPCS.WindowsLiveAuth {
     public partial class LiveAuthSettings: System.Web.UI.Page {
