@@ -37,6 +37,8 @@ namespace SPCS.WindowsLiveAuth {
                 }
             }
 
+            string redirectUrl = SPContext.Current.Site.RootWeb.ServerRelativeUrl;
+
             // Delegated Authentication
             if (context.Request.Form["action"] == "delauth") {
                 // consent response
@@ -53,7 +55,7 @@ namespace SPCS.WindowsLiveAuth {
 
                     case "RequestRejected":
                         lcu.UpdateConsentToken(string.Empty);
-                        context.Response.Redirect("/default.aspx");
+                        context.Response.Redirect(redirectUrl);
                         context.Response.End();
                         return;
 
@@ -62,7 +64,7 @@ namespace SPCS.WindowsLiveAuth {
                 }
             }
 
-            string redirectUrl = "/Default.aspx";
+            
 
 
             // Web presence without delegation

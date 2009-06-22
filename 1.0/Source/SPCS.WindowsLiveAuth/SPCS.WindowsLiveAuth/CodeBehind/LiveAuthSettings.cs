@@ -13,6 +13,7 @@
  * 
  */
 using System;
+using System.Collections;
 using System.Web.Configuration;
 using System.Web.UI.WebControls;
 using Microsoft.SharePoint;
@@ -22,7 +23,9 @@ using Microsoft.SharePoint.WebControls;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml;
-using SPExLib.Extensions;
+using SPExLib.General;
+using SPExLib.SharePoint;
+using System.Collections.Generic;
 
 namespace SPCS.WindowsLiveAuth {
     public partial class LiveAuthSettings: System.Web.UI.Page {
@@ -232,16 +235,23 @@ namespace SPCS.WindowsLiveAuth {
         }
 
         private static SPWebConfigModification createWebConfigModification(uint sequence, string name, string path, string value, SPWebConfigModification.SPWebConfigModificationType wmtype) {
-            SPWebConfigModification ret = new SPWebConfigModification(name, path);
-            ret.Owner = "WindowsLiveAuthProvider";
-            ret.Sequence = sequence;
-            ret.Type = wmtype;
-            ret.Value = value;
+            SPWebConfigModification ret = new SPWebConfigModification(name, path) { 
+                Owner = "WindowsLiveAuthProvider", 
+                Sequence = sequence, 
+                Type = wmtype, 
+                Value = value };
 
             return ret;
         }
         private static void removeProviders(SPWebApplication webApp) {
-            throw new NotImplementedException();
+            List<SPWebConfigModification> removeThese = new List<SPWebConfigModification>();
+            foreach (SPWebConfigModification modification in webApp.WebConfigModifications) {
+                if (modification.Owner == "WindowsLiveAuthProvider") {
+                    removeThese.Add(modification);
+                }
+            }
+            removeThese.ForEach(modification => webApp.WebConfigModifications.Remove(modification));
+            webApp.WebService.ApplyWebConfigModifications();
         }
         private static void configureFormsAuthForZone(SPWebApplication webApp, SPUrlZone urlZone) {
             // make a manual change to the web.config, since the SPWebConfigModification does not support
@@ -324,8 +334,7 @@ namespace SPCS.WindowsLiveAuth {
                         list.Update();
                         return;
                     }
-
-                    SPListTemplate template = web.ListTemplates["Custom List"];
+                    SPListTemplate template = web.GetListTemplateByInternalName("custlist");
                     Guid g = web.Lists.Add(listName, "Windows Live ID Profile Sync and settings", template);
                     web.Update();
 
@@ -353,8 +362,8 @@ namespace SPCS.WindowsLiveAuth {
                         list.Update();
                         return;
                     }
-
-                    SPListTemplate template = web.ListTemplates["Custom List"];
+                    
+                    SPListTemplate template = web.GetListTemplateByInternalName("custlist");
                     Guid g = web.Lists.Add(listName, "Windows Live ID Profile Storage", template);
                     web.Update();
                     list = web.Lists[g];

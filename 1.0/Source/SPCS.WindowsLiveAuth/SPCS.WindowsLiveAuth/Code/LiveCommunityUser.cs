@@ -19,7 +19,10 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Administration;
 using System.IO;
 using System.Web;
-using SPExLib.Extensions;
+using SPExLib.General;
+using SPExLib.SharePoint;
+using SPExLib.SharePoint.Linq;
+using SPExLib.SharePoint.Linq.Base;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveCommunityUser {
@@ -156,7 +159,7 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        list.Items.ForEach(item => users.Add(new LiveCommunityUser(item)));
+                        list.Items.ForEach<SPListItem>(item => users.Add(new LiveCommunityUser(item)));
                         
                     }
                 }
@@ -364,9 +367,12 @@ namespace SPCS.WindowsLiveAuth {
         }
 
         private static bool checkUniqueEmail(SPList list, string email, string id) {
-
-            SPQuery query = new SPQuery { Query = string.Format("<Where><And><Neq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Neq><Eq><FieldRef Name='EMail'/><Value Type='Text'>{1}</Value></Eq><And></Where>", id, email) };
-            SPListItemCollection items = list.GetItems(query);
+            if (string.IsNullOrEmpty(email)) {
+                // the user has not registered yet
+                return true;
+            }
+            
+            SPListItemCollection items = list.GetItems("<Where><And><Neq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Neq><Eq><FieldRef Name='Email'/><Value Type='Text'>{1}</Value></Eq></And></Where>".FormatWith(id, email) );
 
             return items.Count == 0;
         }
