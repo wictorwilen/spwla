@@ -18,7 +18,8 @@ using Microsoft.SharePoint.WebControls;
 using System.Web.UI.WebControls;
 using System.Web.UI;
 using WindowsLive;
-using SPExLib.Extensions;
+using SPExLib.General;
+using SPExLib.SharePoint;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthProfile: System.Web.UI.Page {

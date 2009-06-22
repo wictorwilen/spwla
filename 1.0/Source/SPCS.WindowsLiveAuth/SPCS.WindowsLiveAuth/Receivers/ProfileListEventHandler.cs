@@ -14,7 +14,8 @@
  */
 using System;
 using Microsoft.SharePoint;
-using SPExLib.Extensions;
+using SPExLib.General;
+using SPExLib.SharePoint;
 
 namespace SPCS.WindowsLiveAuth {
     class ProfileListEventHandler : SPItemEventReceiver {

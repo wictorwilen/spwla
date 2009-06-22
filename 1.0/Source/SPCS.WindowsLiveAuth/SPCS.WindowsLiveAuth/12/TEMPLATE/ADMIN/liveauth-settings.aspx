@@ -100,7 +100,8 @@
 
         <wssuc:InputFormSection runat="server" Title="Windows Live ID Profile Settings" >
             <Template_Description>
-                TODO
+                Fill in the settings for your Windows Live ID enabled site. <em>Domain</em> must match the Windows Live registered domain. The <em>Profile Site</em> should be a secured SharePoint site where all user data will be stored.
+                
             </Template_Description>
             <Template_InputFormControls>
                 <wssuc:InputFormControl runat="server" LabelText="Domain" Visible="True">
@@ -146,7 +147,7 @@
         
         <wssuc:InputFormSection runat="server" Title="Windows Live ID Advanced Settings" >
             <Template_Description>
-                TODO
+                
             </Template_Description>
             <Template_InputFormControls>
                 
@@ -178,7 +179,7 @@
         </wssuc:InputFormSection>
         <wssuc:ButtonSection runat="server">
             <template_buttons>
-                <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Delete_Click" Text="Delete settings" id="butDelete" />
+                <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Delete_Click" Text="Clear settings" id="butDelete" />
                 <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Submit" id="butSubmit" />
             </template_buttons>
         </wssuc:ButtonSection>

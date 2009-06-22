@@ -60,11 +60,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\..\Projects\References\SharePoint\Microsoft.SharePoint.dll</HintPath>
     </Reference>
-    <Reference Include="SPExLib, Version=1.0.0.1, Culture=neutral, PublicKeyToken=c029fa26bda69490, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\References\SPExLib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="SPExLib, Version=12.0.0.2, Culture=neutral, PublicKeyToken=c029fa26bda69490, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -128,6 +124,7 @@
     <None Include="12\TEMPLATE\LAYOUTS\liveauth-handler.ashx">
     </None>
     <Content Include="12\TEMPLATE\LAYOUTS\liveauth-admin.aspx" />
+    <Content Include="GAC\SPExLib.dll" />
     <Content Include="License.txt" />
     <Content Include="solutionid.txt" />
     <Content Include="WLASignInCobranding.xml" />
