@@ -17,6 +17,7 @@ namespace SPCS.WindowsLiveAuth {
         /// Initializes a new instance of the LivePresenceConsentControl class.
         /// </summary>
         public LivePresenceConsentLink() {
+            this.Target = "_blank";
         }
 
         protected override void OnPreRender(EventArgs e) {
