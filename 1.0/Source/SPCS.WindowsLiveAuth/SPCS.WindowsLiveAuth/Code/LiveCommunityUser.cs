@@ -26,9 +26,11 @@ using SPExLib.SharePoint.Linq.Base;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveCommunityUser {
+        private const string cEmailCamlQuery = "<Where><Eq><FieldRef Name='Email'/><Value Type='Text'>{0}</Value></Eq></Where>";
+        private const string cUuidCamlQuery = "<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>";
         private LiveCommunityUser(SPListItem listItem) {
 
-            this.Id = listItem.GetListItemString("UUID");
+                this.Id = listItem.GetListItemString("UUID");
             this.DisplayName = listItem.GetListItemString("DisplayName");
             this.Email = listItem.GetListItemString("Email");
             this.Description = listItem.GetListItemString("Description");
@@ -67,21 +69,7 @@ namespace SPCS.WindowsLiveAuth {
             LiveCommunityUser lcu = null;
 
             SPWebApplication webApp = null;
-            //if (sourceWeb == null) {
-            //    webApp = SPContext.Current.Site.WebApplication;
-            //}
-            //else {
-            //    webApp = sourceWeb.Site.WebApplication;
-            //}
-
-            //try {
-            //    webApp = SPContext.Current.Site.WebApplication;
-            //}
-            //catch (InvalidOperationException) {
-            //    using (SPSite site = new SPSite(HttpContext.Current.Request.Url.ToString())) {
-            //        webApp = site.WebApplication;
-            //    }
-            //}
+            
             if (sourceWeb == null) {
                 SPSecurity.RunWithElevatedPrivileges(() => {
                     // get it using elev privs, if we dont do this then we
@@ -103,12 +91,15 @@ namespace SPCS.WindowsLiveAuth {
                         SPList list = web.Lists[settings.ProfileListName];
                         SPQuery query = new SPQuery();
                         if (id.IndexOf("@") != -1)
-                            query.Query = "<Where><Eq><FieldRef Name='Email'/><Value Type='Text'>{0}</Value></Eq></Where>".FormatWith(id);
+                            query.Query = cEmailCamlQuery.FormatWith(id);
                         else
-                            query.Query = "<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>".FormatWith(id);
+                            query.Query = cUuidCamlQuery.FormatWith(id);
                         SPListItemCollection items = list.GetItems(query);
-                        if (items.Count != 0)
+                        if (items.Count != 0) {
+                            // TODO: ensure user, push profile!
                             lcu = new LiveCommunityUser(items[0]);
+                        }
+                            
                     }
                 }
             });
@@ -132,7 +123,7 @@ namespace SPCS.WindowsLiveAuth {
                         web.AllowUnsafeUpdates = true;
                         SPList list = web.Lists[settings.ProfileListName];
                         if (checkUniqueEmail(list, email, id)) {
-                            SPListItem item = list.Items.Add();
+                            SPListItem item = list.AddItem();
                             item["Email"] = email;
                             item["Title"] = email;
                             item["UUID"] = id;
@@ -176,7 +167,7 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id) };
+                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0)
                             items[0].Delete();
@@ -216,7 +207,7 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id) };
+                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0) {
                             items[0]["Locked"] = false;
@@ -238,7 +229,7 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", id) };
+                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0) {
                             items[0]["Locked"] = true;
@@ -259,7 +250,7 @@ namespace SPCS.WindowsLiveAuth {
                         SPList list = web.Lists[settings.ProfileListName];
                         web.AllowUnsafeUpdates = true;
                         site.AllowUnsafeUpdates = true;
-                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id) };
+                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, this.Id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0) {
                             SPListItem item = items[0];
@@ -284,7 +275,7 @@ namespace SPCS.WindowsLiveAuth {
                         if (checkUniqueEmail(list, user.Email, user.Id)) {
                             web.AllowUnsafeUpdates = true;
                             site.AllowUnsafeUpdates = true;
-                            SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", user.Id) };
+                            SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, user.Id) };
                             SPListItemCollection items = list.GetItems(query);
                             if (items.Count != 0) {
                                 SPListItem item = items[0];
@@ -469,7 +460,7 @@ namespace SPCS.WindowsLiveAuth {
                         SPList list = web.Lists[settings.ProfileListName];
                         web.AllowUnsafeUpdates = true;
                         site.AllowUnsafeUpdates = true;
-                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id) };
+                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, this.Id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count != 0) {
                             SPListItem item = items[0];
@@ -490,7 +481,7 @@ namespace SPCS.WindowsLiveAuth {
                         SPList list = web.Lists[settings.ProfileListName];
                         site.AllowUnsafeUpdates = true;
                         web.AllowUnsafeUpdates = true;
-                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id) };
+                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, this.Id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count > 0) {
                             SPListItem uItem = items[0];
@@ -511,7 +502,7 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format("<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>", this.Id) };
+                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, this.Id) };
                         SPListItemCollection items = list.GetItems(query);
                         if (items.Count > 0) {
                             SPListItem uItem = items[0];

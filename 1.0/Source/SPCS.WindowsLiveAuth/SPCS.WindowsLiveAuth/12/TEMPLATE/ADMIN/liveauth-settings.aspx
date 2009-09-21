@@ -62,6 +62,15 @@
                 </tr>
             </Template_InputFormControls>
         </wssuc:InputFormSection>
+        <wssuc:InputFormSection runat="server" Title="Status" >
+            <Template_Description>
+                Status of current Web Application
+            </Template_Description>
+            <Template_InputFormControls>                
+                <asp:Panel id="statusPanel" runat="server"></asp:Panel>
+                
+            </Template_InputFormControls>            
+        </wssuc:InputFormSection>
         <wssuc:InputFormSection runat="server" Title="Windows Live ID login zone" >
             <Template_Description>
                 Choose which zone to configure to use the Windows Live ID Authentication. Leave (none) if you only would like to add the membership providers.

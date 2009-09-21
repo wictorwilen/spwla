@@ -32,5 +32,11 @@
                 Title="Configure Windows Live ID"
                 Description="Windows Live ID administration">
     <UrlAction Url="~sitecollection/_layouts/liveauth-admin.aspx"/>
-  </CustomAction>  
+  </CustomAction>
+
+  <!-- delegate control to avoid UUID names on sub site collections -->
+  <Control Id="AdditionalPageHead"
+           Sequence="10"
+           ControlAssembly="SPCS.WindowsLiveAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4b37e1a71dac8e81"
+           ControlClass="SPCS.WindowsLiveAuth.UserSyncDelegate"/>
 </Elements>

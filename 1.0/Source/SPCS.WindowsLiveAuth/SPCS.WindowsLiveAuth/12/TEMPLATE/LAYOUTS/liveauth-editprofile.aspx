@@ -27,12 +27,21 @@
                 <span id='part1'>
                     <wssuc:ToolBar  id="toolBarTbltop" RightButtonSeparator="&nbsp;"
                         runat="server">
-                                 <template_buttons>
-                         
+                                <template_buttons>
+                         <wssuc:ToolBarButton runat="server"
+						Text="My Regional Settings"
+						id="tbbRegional"						
+						AccessKey="R"/>
+						<wssuc:ToolBarButton runat="server"
+						Text="My Alerts"
+						id="tbbAlerts"
+						NavigateUrl="mysubs.aspx"
+						AccessKey="A"/>
                     </template_buttons>
                         <template_rightbuttons>
                           <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Save" id="butSubmit2" />
                         </template_rightbuttons>
+                        
                     </wssuc:ToolBar>
                     
                     <table class="ms-formtable" style="margin-top: 8px;" border="0" cellpadding="0" cellspacing="0"

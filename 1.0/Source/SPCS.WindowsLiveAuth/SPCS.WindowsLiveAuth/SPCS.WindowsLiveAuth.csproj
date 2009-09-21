@@ -83,6 +83,7 @@
     <Compile Include="CodeBehind\LiveAuthAdmin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Controls\UserSyncDelegate.cs" />
     <Compile Include="Handlers\LiveAuthImageHandler.cs" />
     <Compile Include="Controls\LiveAuthProfileRedirect.cs" />
     <Compile Include="CodeBehind\LiveAuthSettings.cs">
@@ -117,7 +118,7 @@
     <Content Include="12\TEMPLATE\FEATURES\SPCS.WindowsLiveAuth\feature.xml" />
     <Content Include="12\TEMPLATE\IMAGES\SPCS.WindowsLiveAuth\LiveID16.gif" />
     <Content Include="12\TEMPLATE\IMAGES\SPCS.WindowsLiveAuth\liveid32.gif" />
-    <Content Include="12\TEMPLATE\IMAGES\SPCS.WindowsLiveAuth\person.png" />
+    <EmbeddedResource Include="Resources\person.png" />
     <Content Include="12\TEMPLATE\LAYOUTS\liveauth-editprofile.aspx" />
     <Content Include="12\TEMPLATE\LAYOUTS\liveauth-profile.aspx">
     </Content>
@@ -136,6 +137,7 @@
     <None Include="12\TEMPLATE\FEATURES\SPCS.WindowsLiveAuth\LastLoggedInUsers.webpart" />
     <None Include="12\TEMPLATE\LAYOUTS\liveauth-image.ashx" />
     <None Include="SPCS.WindowsLiveAuth.snk" />
+    <None Include="SPCS.WindowsLiveAuth.wsp" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

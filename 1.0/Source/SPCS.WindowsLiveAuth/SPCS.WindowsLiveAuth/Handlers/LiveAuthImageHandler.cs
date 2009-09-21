@@ -20,6 +20,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using Microsoft.SharePoint.Utilities;
 using Microsoft.SharePoint;
+using System.Reflection;
 
 namespace SPCS.WindowsLiveAuth {
 
@@ -57,18 +58,16 @@ namespace SPCS.WindowsLiveAuth {
             {
                 lcu.GetImage(stream);
 
-                if (stream == null || stream.Length == 0)
-                {
-                    SPSecurity.RunWithElevatedPrivileges(() => {
-                        // need to run this using elev since SPUtility.GetGenericSetupPath() makes a registry read!
-                        using (FileStream from = File.Open(Path.Combine(SPUtility.GetGenericSetupPath(@"TEMPLATE\IMAGES\SPCS.WindowsLiveAuth"), "person.png"), FileMode.Open)) {
-                            int readCount;
-                            byte[] buffer = new byte[1024];
-                            while ((readCount = from.Read(buffer, 0, 1024)) != 0)
-                                stream.Write(buffer, 0, readCount);
-                        }
-                    });
+                if (stream == null || stream.Length == 0) {
+                    Assembly asm = Assembly.GetExecutingAssembly();
+                    using (Stream from = asm.GetManifestResourceStream("SPCS.WindowsLiveAuth.Resources.person.png")) {
+                        int readCount;
+                        byte[] buffer = new byte[1024];
+                        while ((readCount = from.Read(buffer, 0, 1024)) != 0)
+                            stream.Write(buffer, 0, readCount);
+                    }
                 }
+                
 
                 if (stream != null)
                 {
