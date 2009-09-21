@@ -214,7 +214,10 @@ namespace SPCS.WindowsLiveAuth {
                 user => ConvertFromLiveCommunityUser(user));
 
             totalRecords = users.Count;
-            if (totalRecords > 0) {
+            if (totalRecords <= pageSize) {
+                // add em to the collection
+                users.ForEach(user => userCollection.Add(user));
+            } else if (totalRecords > pageSize) {
                 // Get the correct range
                 users = users.GetRange(pageIndex * pageSize, pageSize);
 

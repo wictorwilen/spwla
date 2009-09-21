@@ -26,6 +26,7 @@ using System.Xml;
 using SPExLib.General;
 using SPExLib.SharePoint;
 using System.Collections.Generic;
+using System.Web.UI;
 
 namespace SPCS.WindowsLiveAuth {
     public partial class LiveAuthSettings: System.Web.UI.Page {
@@ -52,6 +53,7 @@ namespace SPCS.WindowsLiveAuth {
         protected CheckBox cbDelegated;
         protected TextBox tbPolicyPage;
         protected TextBox tbDomain;
+        protected Panel statusPanel;
 
 
         private void Page_Load(object sender, System.EventArgs e) {
@@ -179,13 +181,33 @@ namespace SPCS.WindowsLiveAuth {
         protected void OnContextChange(object sender, EventArgs e) {
             ddZones.Items.Add(new ListItem("(none)", string.Empty));
             if (Selector.CurrentItem != null) {
+                bool membershipProviderFound = false;
+                bool roleManagerFound = false;
                 foreach (SPUrlZone zone in Selector.CurrentItem.IisSettings.Keys) {
                     SPIisSettings iis = Selector.CurrentItem.IisSettings[zone];
                     if (iis.AuthenticationMode == AuthenticationMode.Forms) {
                         ddZones.Items.Add(new ListItem(String.Format("{0} ({1})", zone, iis.MembershipProvider), zone.ToString()));
+                        if (iis.MembershipProvider == "LiveID") {
+                            membershipProviderFound = true;
+                        }
+                        if (iis.RoleManager == "LiveRoles") {
+                            roleManagerFound = true;
+                        }
                     }
-
                 }
+                if (roleManagerFound) {
+                    statusPanel.Controls.Add(new LiteralControl("<img src='/_layouts/images/ServiceInstalled.gif'/> Role Manager configured<br/>"));
+                }
+                else {
+                    statusPanel.Controls.Add(new LiteralControl("<img src='/_layouts/images/ServiceNotInstalled.gif'/> Role Manager not configured<br/>"));
+                }
+                if (membershipProviderFound) {
+                    statusPanel.Controls.Add(new LiteralControl("<img src='/_layouts/images/ServiceInstalled.gif'/> Membership Provider configured<br/>"));
+                }
+                else {
+                    statusPanel.Controls.Add(new LiteralControl("<img src='/_layouts/images/ServiceNotInstalled.gif'/> Membership Provider  not configured<br/>"));
+                }
+
                 LiveAuthConfiguration settings = Selector.CurrentItem.GetChild<LiveAuthConfiguration>("LiveAuthConfiguration");
                 if (settings != null) {
                     tbApplicationId.Text = settings.ApplicationId;
@@ -415,7 +437,7 @@ namespace SPCS.WindowsLiveAuth {
                 list.Fields.Add("Email", SPFieldType.Text, false);
             }
             if (!list.Fields.ContainsField("Description")) {
-                list.Fields.Add("Description", SPFieldType.Text, false);
+                list.Fields.Add("Description", SPFieldType.Note, false);
             }
             if (!list.Fields.ContainsField("JobTitle")) {
                 list.Fields.Add("JobTitle", SPFieldType.Text, false);

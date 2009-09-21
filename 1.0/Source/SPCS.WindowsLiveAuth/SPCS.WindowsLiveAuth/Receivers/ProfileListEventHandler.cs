@@ -40,7 +40,7 @@ namespace SPCS.WindowsLiveAuth {
             LiveCommunityUser lcu = LiveCommunityUser.GetUser(account, spWeb);
 
             if (lcu != null) {
-                lcu.PushProfile(properties.OpenWeb());
+                lcu.PushProfile(spWeb);
 
 
                 DateTime? ll = DateTimeExtensions.ParseNull(properties.AfterProperties["LastLogin"]);
@@ -70,7 +70,7 @@ namespace SPCS.WindowsLiveAuth {
                                             using (SPWeb web2 = site2.OpenWeb()) {
 
                                                 SPList announcements = web2.Lists[item.GetListItemString("AnnouncementList")];
-                                                SPListItem announcement = announcements.Items.Add();
+                                                SPListItem announcement = announcements.AddItem();
                                                 announcement["Title"] = title;
                                                 announcement["Body"] = body;
                                                 if (announcement.Contains("Image")) {

@@ -19,6 +19,7 @@ using System.Web.UI.WebControls;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Drawing.Imaging;
+using SPExLib.General;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthProfileEdit: System.Web.UI.Page {
@@ -39,6 +40,9 @@ namespace SPCS.WindowsLiveAuth {
         protected FileUpload fileupload;
         protected Image userpicture;
         protected ToolBarButton tbbDelegated;
+        protected ToolBarButton tbbRegional;
+        protected ToolBarButton tbbAlerts;
+
 
 
 
@@ -48,16 +52,12 @@ namespace SPCS.WindowsLiveAuth {
             if (string.IsNullOrEmpty(redir)) {
                 redir = SPContext.Current.Web.Url;
             }
+            tbbRegional.NavigateUrl = "regionalsetng.aspx?Type=User&Source={0}".FormatWith(this.Request.Url.ToString());
+
 
             if (User.Identity.IsAuthenticated) {
 
-                /*LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
-                WindowsLive.WindowsLiveLogin wll = new WindowsLiveLogin(settings.ApplicationId, settings.ApplicationKey, settings.ApplicationAlgorithm, false, string.Empty);
-                tbbDelegated.Visible = settings.UseDelegatedAuth;
-                wll.PolicyUrl = settings.PolicyPage;
-                tbbDelegated.NavigateUrl = wll.GetConsentUrl("IMControl.IMAllowAll", this.Page.Request.Url.ToString(), String.Format(@"{0}/_layouts/liveauth-handler.ashx", this.Page.Request.Url.GetLeftPart(UriPartial.Authority)));
-                */
-
+           
                 if (!IsPostBack) {
                     string uuid = Request.QueryString["uuid"];
                     string id = Request.QueryString["id"];
@@ -78,7 +78,7 @@ namespace SPCS.WindowsLiveAuth {
                         }
                         else {
                             userpicture.Visible = true;
-                            userpicture.ImageUrl = string.Format("/_layouts/liveauth-image.ashx?uuid={0}&s=100", lcu.Id);
+                            userpicture.ImageUrl = "/_layouts/liveauth-image.ashx?uuid={0}&s=100".FormatWith(lcu.Id);
                         }
                         tbSipAddress.Text = lcu.SipAddress;
                         tbTwitter.Text = lcu.TwitterAccount;
@@ -146,7 +146,7 @@ namespace SPCS.WindowsLiveAuth {
                 lcu.FeedUrl = tbFeed.Text;
                 lcu.HomePageUrl = tbHomepage.Text;
                 lcu.Title = tbJobTitle.Text;
-                lcu.ImageUrl = string.Format("/_layouts/liveauth-image.ashx?uuid={0}&s=50", lcu.Id);
+                lcu.ImageUrl = "/_layouts/liveauth-image.ashx?uuid={0}&s=50".FormatWith(lcu.Id);
                 //lcu.ImageUrl = tbPicture.Text;
                 lcu.SipAddress = tbSipAddress.Text;
                 lcu.TwitterAccount = tbTwitter.Text;
@@ -160,7 +160,7 @@ namespace SPCS.WindowsLiveAuth {
                     using (SPSite site = new SPSite(SPContext.Current.Web.Url)) {
                         using (SPWeb web = site.RootWeb) {
                             web.AllowUnsafeUpdates = true;
-                            SPUser user = web.EnsureUser(lcu.Id);
+                            SPUser user = web.EnsureUser("liveid:{0}".FormatWith(lcu.Id)); // TODO: dont hardcode liveid:
                             user.Name = tbDisplayName.Text;
                             user.Update();
                         }

@@ -44,26 +44,15 @@ namespace SPCS.WindowsLiveAuth {
         protected HyperLink delauth;
         protected Image messengerstatus;
 
-        /// <summary>
-        /// Gets an application verifier.
-        /// </summary>
-        //public string ApplicationVerifier {
-        //    get {
-        //        LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
-
-        //     
-        //        WindowsLive.WindowsLiveLogin wll = new WindowsLiveLogin(settings.ApplicationId, settings.ApplicationKey, settings.ApplicationAlgorithm, false, string.Empty);
-        //        return wll.GetAppVerifier();
-        //    }
-        //}
 
 
-        private void Page_Load(object sender, System.EventArgs e) {
-            redir = Request.QueryString["Source"];
 
-            if (string.IsNullOrEmpty(redir)) {
+        private void Page_Load(object sender, EventArgs e) {
+
+            if (string.IsNullOrEmpty(redir))
                 redir = SPContext.Current.Web.Url;
-            }
+            else
+                redir = Request.QueryString["Source"];
 
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
             WindowsLiveLogin wll = new WindowsLiveLogin(settings.ApplicationId, settings.ApplicationKey, settings.ApplicationAlgorithm, false, string.Empty);
@@ -94,10 +83,10 @@ namespace SPCS.WindowsLiveAuth {
                     if (lcu != null) {
                         LabelTitle.Text = lcu.DisplayName;
                         lblDisplayName.Text = lcu.DisplayName;
-                        hlEmail.NavigateUrl = String.Format("mailto:{0}", lcu.Email);
+                        hlEmail.NavigateUrl = "mailto:{0}".FormatWith(lcu.Email);
                         hlEmail.Text = lcu.Email;
                         lbAbout.Controls.Add(new LiteralControl(lcu.Description));
-                        imImage.ImageUrl = string.Format("/_layouts/liveauth-image.ashx?uuid={0}&s=60", lcu.Id);
+                        imImage.ImageUrl = "/_layouts/liveauth-image.ashx?uuid={0}&s=60".FormatWith(lcu.Id);
                         lbCompany.Text = lcu.Company;
                         lbTitle.Text = lcu.Title;
                         if (!string.IsNullOrEmpty(lcu.FeedUrl)) {
@@ -105,8 +94,8 @@ namespace SPCS.WindowsLiveAuth {
                             hlFeed.Text = lcu.FeedUrl;
                         }
                         if (!string.IsNullOrEmpty(lcu.TwitterAccount)) {
-                            hlTwitter.NavigateUrl = String.Format("http://twitter.com/{0}", lcu.TwitterAccount);
-                            hlTwitter.Text = String.Format("http://twitter.com/{0}", lcu.TwitterAccount);
+                            hlTwitter.NavigateUrl = "http://twitter.com/{0}".FormatWith( lcu.TwitterAccount);
+                            hlTwitter.Text = "http://twitter.com/{0}".FormatWith(lcu.TwitterAccount);
                         }
                         if (!string.IsNullOrEmpty(lcu.HomePageUrl)) {
                             hlWebsite.NavigateUrl = lcu.HomePageUrl;
