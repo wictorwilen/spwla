@@ -29,7 +29,14 @@ namespace SPCS.WindowsLiveAuth {
             if (SPSecurity.AuthenticationMode == System.Web.Configuration.AuthenticationMode.Forms) {
                 LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
                 if (settings != null) {
-                    SPUser spUser = SPContext.Current.Web.AllUsers.GetByID(int.Parse(HttpContext.Current.Request.QueryString["id"]));
+                    SPUser spUser = null;
+                    if (string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["id"])) {
+                        spUser = SPContext.Current.Web.CurrentUser;
+                    }
+                    else {
+                        spUser = SPContext.Current.Web.AllUsers.GetByID(int.Parse(HttpContext.Current.Request.QueryString["id"]));    
+                    }
+                    
                     LiveCommunityUser lcu = LiveCommunityUser.GetUser(spUser.GetFormsLoginName());
                     if (lcu != null) {
                         HttpContext.Current.Response.Redirect(String.Format("{0}/_layouts/liveauth-profile.aspx?id={1}", SPContext.Current.Web.Url, HttpContext.Current.Request.QueryString["ID"]), true);
