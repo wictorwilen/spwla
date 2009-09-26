@@ -18,6 +18,7 @@ using Microsoft.SharePoint;
 using System;
 using SPExLib.General;
 using SPExLib.SharePoint;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthProfileRedirect: SPControl {
@@ -34,7 +35,7 @@ namespace SPCS.WindowsLiveAuth {
                         spUser = SPContext.Current.Web.CurrentUser;
                     }
                     else {
-                        spUser = SPContext.Current.Web.AllUsers.GetByID(int.Parse(HttpContext.Current.Request.QueryString["id"]));    
+                        spUser = SPContext.Current.Web.AllUsers.GetByID(int.Parse(HttpContext.Current.Request.QueryString["id"], CultureInfo.CurrentCulture));    
                     }
                     
                     LiveCommunityUser lcu = LiveCommunityUser.GetUser(spUser.GetFormsLoginName());

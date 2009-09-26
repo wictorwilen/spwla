@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
     [ToolboxData("<{0}:LiveCommunityUserControl runat=server></{0}:LiveCommunityUserControl>")]
@@ -64,49 +65,49 @@ namespace SPCS.WindowsLiveAuth {
 
         
 
-        protected override void RenderContents(HtmlTextWriter output) {
-            
-            output.Write("<table cellPadding='0' cellSpacing='0' border='0' width='100%' class='vCard'><tr>");
-            output.Write("<td style='width:{0}px;padding: 0 3 3 0'>", this.ImageSize);
-            output.Write("<img src='/_layouts/liveauth-image.ashx?uuid={0}&s={1}' alt='{2}' class='photo'/>", this.LiveCommunityUser.Id, this.ImageSize, this.LiveCommunityUser.DisplayName);
-            output.Write("</td>");
-            output.Write("<td style='padding: 0 3 3 0' valign='top'>");
+        protected override void RenderContents(HtmlTextWriter writer) {
+
+            writer.Write("<table cellPadding='0' cellSpacing='0' border='0' width='100%' class='vCard'><tr>");
+            writer.Write("<td style='width:{0}px;padding: 0 3 3 0'>", this.ImageSize);
+            writer.Write("<img src='/_layouts/liveauth-image.ashx?uuid={0}&s={1}' alt='{2}' class='photo'/>", this.LiveCommunityUser.Id, this.ImageSize, this.LiveCommunityUser.DisplayName);
+            writer.Write("</td>");
+            writer.Write("<td style='padding: 0 3 3 0' valign='top'>");
             if (this.Page.User.Identity.IsAuthenticated) {
-                output.Write("<a href='/_layouts/liveauth-profile.aspx?uuid={0}' style='font-weight:bold' class='fn url'>{1}</a>", this.LiveCommunityUser.Id, this.LiveCommunityUser.DisplayName);
+                writer.Write("<a href='/_layouts/liveauth-profile.aspx?uuid={0}' style='font-weight:bold' class='fn url'>{1}</a>", this.LiveCommunityUser.Id, this.LiveCommunityUser.DisplayName);
                 if (this.ShowPresence && !string.IsNullOrEmpty(LiveCommunityUser.CID)) {
-                    output.Write(String.Format("<img src='http://messenger.services.live.com/users/{0}@apps.messenger.live.com/presenceimage/' align='left'/>", LiveCommunityUser.CID));
+                    writer.Write(String.Format(CultureInfo.CurrentCulture, "<img src='http://messenger.services.live.com/users/{0}@apps.messenger.live.com/presenceimage/' align='left'/>", LiveCommunityUser.CID));
                 }
             }
             else {
-                output.Write("<span style='font-weight:bold' class='fn'>{0}</span>", this.LiveCommunityUser.DisplayName);
+                writer.Write("<span style='font-weight:bold' class='fn'>{0}</span>", this.LiveCommunityUser.DisplayName);
                 if (this.ShowPresenceForAnonymous && !string.IsNullOrEmpty(LiveCommunityUser.CID)) {
-                    output.Write(String.Format("<img src='http://messenger.services.live.com/users/{0}@apps.messenger.live.com/presenceimage/' align='left'/>", LiveCommunityUser.CID));
+                    writer.Write(String.Format(CultureInfo.CurrentCulture,"<img src='http://messenger.services.live.com/users/{0}@apps.messenger.live.com/presenceimage/' align='left'/>", LiveCommunityUser.CID));
                 }
             }
             
             
-            output.Write("<br/><nobr>");
+            writer.Write("<br/><nobr>");
             if (!string.IsNullOrEmpty(this.LiveCommunityUser.Title)) {
-                output.Write(String.Format("<span class='title'>{0}</span>", this.LiveCommunityUser.Title));
+                writer.Write(String.Format(CultureInfo.CurrentCulture, "<span class='title'>{0}</span>", this.LiveCommunityUser.Title));
             }
             if (!string.IsNullOrEmpty(this.LiveCommunityUser.Company)) {
                 if (!string.IsNullOrEmpty(this.LiveCommunityUser.Title)) {
-                    output.Write(", ");
+                    writer.Write(", ");
                 }
-                output.Write(String.Format("<span class='org'>{0}</span>", this.LiveCommunityUser.Company));
+                writer.Write(String.Format(CultureInfo.CurrentCulture, "<span class='org'>{0}</span>", this.LiveCommunityUser.Company));
             }
-            output.Write("</nobr><br/><nobr>");
+            writer.Write("</nobr><br/><nobr>");
             if (!string.IsNullOrEmpty(this.LiveCommunityUser.City)) {
-                output.Write(String.Format("<span class='adr locality'>{0}</span>", this.LiveCommunityUser.City));
+                writer.Write(String.Format(CultureInfo.CurrentCulture, "<span class='adr locality'>{0}</span>", this.LiveCommunityUser.City));
             }
             if (!string.IsNullOrEmpty(this.LiveCommunityUser.Country)) {
                 if (!string.IsNullOrEmpty(this.LiveCommunityUser.City)) {
-                    output.Write(", ");
+                    writer.Write(", ");
                 }
-                output.Write(String.Format("<span class='adr country-name'>{0}</span>", this.LiveCommunityUser.Country));
+                writer.Write(String.Format(CultureInfo.CurrentCulture, "<span class='adr country-name'>{0}</span>", this.LiveCommunityUser.Country));
             }
-            output.Write("</nobr></td>");
-            output.Write("</tr></table>");
+            writer.Write("</nobr></td>");
+            writer.Write("</tr></table>");
         }
     }
 }

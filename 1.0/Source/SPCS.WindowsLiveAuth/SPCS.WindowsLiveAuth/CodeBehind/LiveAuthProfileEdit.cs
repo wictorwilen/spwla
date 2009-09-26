@@ -20,6 +20,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Drawing.Imaging;
 using SPExLib.General;
+using System.Web.Security;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthProfileEdit: System.Web.UI.Page {
@@ -42,10 +43,12 @@ namespace SPCS.WindowsLiveAuth {
         protected ToolBarButton tbbDelegated;
         protected ToolBarButton tbbRegional;
         protected ToolBarButton tbbAlerts;
+        protected Button btnRemove;
 
 
 
 
+        #region Page_Load
         private void Page_Load(object sender, EventArgs e) {
             redir = Request.QueryString["Source"];
 
@@ -59,9 +62,6 @@ namespace SPCS.WindowsLiveAuth {
 
            
                 if (!IsPostBack) {
-                    string uuid = Request.QueryString["uuid"];
-                    string id = Request.QueryString["id"];
-
                     LiveCommunityUser lcu = LiveCommunityUser.GetUser(User.Identity.Name);
 
                     if (lcu != null) {
@@ -94,6 +94,7 @@ namespace SPCS.WindowsLiveAuth {
                 Response.Redirect(redir);
             }
         }
+        #endregion
         public const int size = 400;
         public void Submit_Click(Object sender, EventArgs e) {
             if (User.Identity.IsAuthenticated) {
@@ -170,7 +171,14 @@ namespace SPCS.WindowsLiveAuth {
                 Response.Redirect(redir);
             }
         }
-
+        public void Unregister_Click(Object sender, EventArgs e) {
+            if (User.Identity.IsAuthenticated) {
+                LiveCommunityUser lcu = LiveCommunityUser.GetUser(User.Identity.Name);
+                LiveCommunityUser.DeleteUser(lcu.Id);
+                FormsAuthentication.SignOut();
+                Response.Redirect(redir);
+            }
+        }
 
 
         #region Web Form Designer generated code

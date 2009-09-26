@@ -50,7 +50,7 @@ namespace SPCS.WindowsLiveAuth {
         public bool AutoApprove = true;
 
         [Persisted]
-        public bool UseDelegatedAuth = false;
+        public bool UseDelegatedAuth;
 
         [Persisted]
         public string PolicyPage = string.Empty;

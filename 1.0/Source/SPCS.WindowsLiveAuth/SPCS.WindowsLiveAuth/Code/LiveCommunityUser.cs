@@ -23,6 +23,7 @@ using SPExLib.General;
 using SPExLib.SharePoint;
 using SPExLib.SharePoint.Linq;
 using SPExLib.SharePoint.Linq.Base;
+using System.Collections.ObjectModel;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveCommunityUser {
@@ -30,7 +31,7 @@ namespace SPCS.WindowsLiveAuth {
         private const string cUuidCamlQuery = "<Where><Eq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Eq></Where>";
         private LiveCommunityUser(SPListItem listItem) {
 
-                this.Id = listItem.GetListItemString("UUID");
+            this.Id = listItem.GetListItemString("UUID");
             this.DisplayName = listItem.GetListItemString("DisplayName");
             this.Email = listItem.GetListItemString("Email");
             this.Description = listItem.GetListItemString("Description");
@@ -54,7 +55,7 @@ namespace SPCS.WindowsLiveAuth {
 
 
         }
-        public static LiveCommunityUser GetUser(string id)      {
+        public static LiveCommunityUser GetUser(string id) {
             return GetUser(id, null);
 
         }
@@ -69,11 +70,12 @@ namespace SPCS.WindowsLiveAuth {
             LiveCommunityUser lcu = null;
 
             SPWebApplication webApp = null;
-            
+
             if (sourceWeb == null) {
                 SPSecurity.RunWithElevatedPrivileges(() => {
                     // get it using elev privs, if we dont do this then we
                     // get an infinite loop since it checks the roles of the current user
+                    // TODO: what if HttpContext.Current and SPContext.Current = null??
                     using (SPSite site = new SPSite(HttpContext.Current.Request.Url.ToString())) {
                         webApp = site.WebApplication;
                     }
@@ -90,7 +92,7 @@ namespace SPCS.WindowsLiveAuth {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
                         SPQuery query = new SPQuery();
-                        if (id.IndexOf("@") != -1)
+                        if (id.IndexOf("@", StringComparison.CurrentCulture) != -1)
                             query.Query = cEmailCamlQuery.FormatWith(id);
                         else
                             query.Query = cUuidCamlQuery.FormatWith(id);
@@ -99,7 +101,7 @@ namespace SPCS.WindowsLiveAuth {
                             // TODO: ensure user, push profile!
                             lcu = new LiveCommunityUser(items[0]);
                         }
-                            
+
                     }
                 }
             });
@@ -142,7 +144,8 @@ namespace SPCS.WindowsLiveAuth {
             CreateUser(user.Id, string.Empty);
 
         }
-        public static List<LiveCommunityUser> GetAllUsers() {
+        public static ReadOnlyCollection<LiveCommunityUser> AllUsers {
+            get {
             List<LiveCommunityUser> users = new List<LiveCommunityUser>();
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
@@ -155,7 +158,8 @@ namespace SPCS.WindowsLiveAuth {
                     }
                 }
             });
-            return users;
+            return new ReadOnlyCollection<LiveCommunityUser>(users);
+            }
         }
         public static bool DeleteUser(string id) {
             if (string.IsNullOrEmpty(id)) {
@@ -167,17 +171,20 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, id) };
-                        SPListItemCollection items = list.GetItems(query);
+
+                        SPListItemCollection items = list.GetItems(string.Format(cUuidCamlQuery, id));
                         if (items.Count != 0)
                             items[0].Delete();
                     }
                 }
             });
+            // TODO: delete from site collections
+            // you cannot delete yourself from the userlist, so this have to be done via some timerjob or similar...
+
             return true;
 
         }
-        public static List<LiveCommunityUser> FindUsers(string field, string value) {
+        public static ReadOnlyCollection<LiveCommunityUser> FindUsers(string field, string value) {
 
             List<LiveCommunityUser> users = new List<LiveCommunityUser>();
 
@@ -187,14 +194,14 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format("<Where><BeginsWith><FieldRef Name='{0}'/><Value Type='Text'>{1}</Value></BeginsWith></Where>", field, value) };
-                        SPListItemCollection items = list.GetItems(query);
+
+                        SPListItemCollection items = list.GetItems(string.Format("<Where><BeginsWith><FieldRef Name='{0}'/><Value Type='Text'>{1}</Value></BeginsWith></Where>", field, value));
                         foreach (SPListItem item in items)
                             users.Add(new LiveCommunityUser(item));
                     }
                 }
             });
-            return users;
+            return new ReadOnlyCollection<LiveCommunityUser>(users);
         }
         public static bool Unlock(string id) {
             if (string.IsNullOrEmpty(id)) {
@@ -207,8 +214,8 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, id) };
-                        SPListItemCollection items = list.GetItems(query);
+
+                        SPListItemCollection items = list.GetItems(string.Format(cUuidCamlQuery, id));
                         if (items.Count != 0) {
                             items[0]["Locked"] = false;
                             items[0].Update();
@@ -229,8 +236,8 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, id) };
-                        SPListItemCollection items = list.GetItems(query);
+
+                        SPListItemCollection items = list.GetItems(string.Format(cUuidCamlQuery, id));
                         if (items.Count != 0) {
                             items[0]["Locked"] = true;
                             items[0].Update();
@@ -250,8 +257,8 @@ namespace SPCS.WindowsLiveAuth {
                         SPList list = web.Lists[settings.ProfileListName];
                         web.AllowUnsafeUpdates = true;
                         site.AllowUnsafeUpdates = true;
-                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, this.Id) };
-                        SPListItemCollection items = list.GetItems(query);
+
+                        SPListItemCollection items = list.GetItems(string.Format(cUuidCamlQuery, this.Id));
                         if (items.Count != 0) {
                             SPListItem item = items[0];
                             item["LastLogin"] = DateTime.Now;
@@ -261,6 +268,7 @@ namespace SPCS.WindowsLiveAuth {
                 }
             });
         }
+
         public static void UpdateUser(LiveCommunityUser user) {
             if (user == null) {
                 throw new ArgumentNullException("user");
@@ -275,8 +283,9 @@ namespace SPCS.WindowsLiveAuth {
                         if (checkUniqueEmail(list, user.Email, user.Id)) {
                             web.AllowUnsafeUpdates = true;
                             site.AllowUnsafeUpdates = true;
-                            SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, user.Id) };
-                            SPListItemCollection items = list.GetItems(query);
+
+
+                            SPListItemCollection items = list.GetItems(string.Format(cUuidCamlQuery, user.Id));
                             if (items.Count != 0) {
                                 SPListItem item = items[0];
                                 item["Title"] = user.Email;
@@ -326,14 +335,14 @@ namespace SPCS.WindowsLiveAuth {
                                     site.AllowUnsafeUpdates = true;
                                     sweb.AllowUnsafeUpdates = true;
                                     SPList list = sweb.Lists["User Information List"];
-                                    SPQuery query = new SPQuery { Query = "<Where><Contains><FieldRef Name='Name'/><Value Type='Text'>{0}</Value></Contains></Where>".FormatWith(user.Id) };
-                                    SPListItemCollection items = list.GetItems(query);
+
+                                    SPListItemCollection items = list.GetItems("<Where><Contains><FieldRef Name='Name'/><Value Type='Text'>{0}</Value></Contains></Where>".FormatWith(user.Id));
                                     if (items.Count > 0) {
                                         SPListItem uItem = items[0];
                                         uItem["Title"] = user.DisplayName;
                                         uItem["EMail"] = user.Email;
                                         uItem["Notes"] = user.Description;
-                                        uItem["Picture"] = settings.Domain.TrimEnd(new char[] {'/'}) + user.ImageUrl;
+                                        uItem["Picture"] = settings.Domain.TrimEnd(new char[] { '/' }) + user.ImageUrl;
                                         uItem["Department"] = user.Company;
                                         uItem["JobTitle"] = user.Title;
                                         uItem["SipAddress"] = user.SipAddress;
@@ -346,6 +355,8 @@ namespace SPCS.WindowsLiveAuth {
             });
 
         }
+
+
         public void PushProfile() {
             PushProfile(this, null);
         }
@@ -362,8 +373,8 @@ namespace SPCS.WindowsLiveAuth {
                 // the user has not registered yet
                 return true;
             }
-            
-            SPListItemCollection items = list.GetItems("<Where><And><Neq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Neq><Eq><FieldRef Name='Email'/><Value Type='Text'>{1}</Value></Eq></And></Where>".FormatWith(id, email) );
+
+            SPListItemCollection items = list.GetItems("<Where><And><Neq><FieldRef Name='UUID'/><Value Type='Text'>{0}</Value></Neq><Eq><FieldRef Name='Email'/><Value Type='Text'>{1}</Value></Eq></And></Where>".FormatWith(id, email));
 
             return items.Count == 0;
         }
@@ -450,7 +461,7 @@ namespace SPCS.WindowsLiveAuth {
             get;
             internal set;
         }
-        
+
         internal void UpdateConsentToken(string token) {
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
 
@@ -460,8 +471,8 @@ namespace SPCS.WindowsLiveAuth {
                         SPList list = web.Lists[settings.ProfileListName];
                         web.AllowUnsafeUpdates = true;
                         site.AllowUnsafeUpdates = true;
-                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, this.Id) };
-                        SPListItemCollection items = list.GetItems(query);
+
+                        SPListItemCollection items = list.GetItems(string.Format(cUuidCamlQuery, this.Id));
                         if (items.Count != 0) {
                             SPListItem item = items[0];
                             this.ConsentToken = token;
@@ -481,13 +492,14 @@ namespace SPCS.WindowsLiveAuth {
                         SPList list = web.Lists[settings.ProfileListName];
                         site.AllowUnsafeUpdates = true;
                         web.AllowUnsafeUpdates = true;
-                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, this.Id) };
-                        SPListItemCollection items = list.GetItems(query);
+
+                        SPListItemCollection items = list.GetItems(string.Format(cUuidCamlQuery, this.Id));
                         if (items.Count > 0) {
                             SPListItem uItem = items[0];
                             try {
                                 uItem.Attachments.DeleteNow("profileImage.png");
-                            } catch (ArgumentOutOfRangeException) {
+                            }
+                            catch (ArgumentOutOfRangeException) {
                             }
                             uItem.Attachments.AddNow("profileImage.png", bytes);
                         }
@@ -502,8 +514,7 @@ namespace SPCS.WindowsLiveAuth {
                 using (SPSite site = new SPSite(settings.ProfileSiteUrl)) {
                     using (SPWeb web = site.OpenWeb()) {
                         SPList list = web.Lists[settings.ProfileListName];
-                        SPQuery query = new SPQuery { Query = string.Format(cUuidCamlQuery, this.Id) };
-                        SPListItemCollection items = list.GetItems(query);
+                        SPListItemCollection items = list.GetItems(string.Format(cUuidCamlQuery, this.Id));
                         if (items.Count > 0) {
                             SPListItem uItem = items[0];
                             foreach (string fileName in uItem.Attachments)

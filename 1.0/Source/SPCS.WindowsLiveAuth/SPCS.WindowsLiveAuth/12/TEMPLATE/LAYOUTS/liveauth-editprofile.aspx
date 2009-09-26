@@ -39,7 +39,7 @@
 						AccessKey="A"/>
                     </template_buttons>
                         <template_rightbuttons>
-                          <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Save" id="butSubmit2" />
+                            <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Save" id="butSubmit2" />
                         </template_rightbuttons>
                         
                     </wssuc:ToolBar>
@@ -167,7 +167,7 @@
                                 <wssuc:ToolBar id="toolBarTbl" RightButtonSeparator="&nbsp;"
                                     runat="server">
                                     <template_buttons>
-                                    
+                                <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Unregister_Click" Text="Unregister" ToolTip="Click here to remove your registration and all personalsettings" id="btnRemove" />         
                                 </template_buttons>
                                     <template_rightbuttons>
                                     <asp:Button runat="server" class="ms-ButtonHeightWidth" OnClick="Submit_Click" Text="Save" id="butSubmit" />
