@@ -27,6 +27,7 @@ using SPExLib.General;
 using SPExLib.SharePoint;
 using System.Collections.Generic;
 using System.Web.UI;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
     public partial class LiveAuthSettings: System.Web.UI.Page {
@@ -36,7 +37,7 @@ namespace SPCS.WindowsLiveAuth {
         protected const string MemberResource = @"<add name=""{0}"" type=""SPCS.WindowsLiveAuth.LiveMembershipProvider, SPCS.WindowsLiveAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4b37e1a71dac8e81"" />";
         protected const string RoleResource = @"<add name=""{0}"" type=""SPCS.WindowsLiveAuth.LiveRoleProvider, SPCS.WindowsLiveAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4b37e1a71dac8e81"" />";
         protected const string FormsResource = @"/_layouts/liveauth-handler.ashx?action=login";
-        protected static Regex rulesMatch = new Regex("\"(?<node>[^\"]*)\"", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static Regex rulesMatch = new Regex("\"(?<node>[^\"]*)\"", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         protected WebApplicationSelector Selector;
         protected DropDownList ddZones;
@@ -57,8 +58,8 @@ namespace SPCS.WindowsLiveAuth {
 
 
         private void Page_Load(object sender, System.EventArgs e) {
-            if (!this.Context.Request.RawUrl.ToLowerInvariant().StartsWith("/_admin/")) {
-                SPUtility.HandleAccessDenied(new UnauthorizedAccessException(SPResource.GetString("AdminVs401Message", new object[0])));
+            if (!this.Context.Request.RawUrl.ToUpperInvariant().StartsWith("/_ADMIN/", StringComparison.CurrentCulture)) {
+                SPUtility.HandleAccessDenied(new UnauthorizedAccessException(SPResource.GetString(CultureInfo.CurrentCulture, "AdminVs401Message", new object[0])));
             }
             
            

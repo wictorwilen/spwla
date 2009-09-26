@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.Web.UI.WebControls;
 using Microsoft.SharePoint;
 using System.Web.UI;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
     public abstract class LiveUserQueryBaseWebPart : WebPart {
@@ -105,7 +106,7 @@ namespace SPCS.WindowsLiveAuth {
             set;
         }
 
-        public LiveUserQueryBaseWebPart() {
+        protected LiveUserQueryBaseWebPart() {
             this.ExportMode = WebPartExportMode.All;
         }
 
@@ -124,11 +125,11 @@ namespace SPCS.WindowsLiveAuth {
                 
 
                 tTable = new Table();
-                
-                tTable.Width = new Unit("100%");
+
+                tTable.Width = new Unit("100%", CultureInfo.CurrentCulture);
                 tTable.CellPadding = 0;
                 tTable.CellSpacing = 0;
-                tTable.BorderWidth = new Unit("0");
+                tTable.BorderWidth = new Unit("0", CultureInfo.CurrentCulture);
 
                 TableRow row = new TableRow();
                 tTable.Rows.Add(row);
@@ -209,7 +210,7 @@ namespace SPCS.WindowsLiveAuth {
                             if (this.NumberOfUsers > 0)
                                 query.RowLimit = (uint)this.NumberOfUsers;
                             SPListItemCollection items = list.GetItems(query);
-                            int count = items.Count;
+                            
                             int added = 0;
                             TableRow row = null;
                             // paging support                            
@@ -218,8 +219,8 @@ namespace SPCS.WindowsLiveAuth {
                                 iCurrentPage = 1;
                             lbPrevious.Enabled = !(iCurrentPage == 1);
                             lbNext.Enabled = !(maxPage == iCurrentPage);
-                            lCurrentPage.Text = iCurrentPage.ToString();
-                            lLastPage.Text = maxPage.ToString();
+                            lCurrentPage.Text = iCurrentPage.ToString(CultureInfo.CurrentCulture);
+                            lLastPage.Text = maxPage.ToString(CultureInfo.CurrentCulture);
                             for (int i = 0; i < this.UsersPerPage && (iCurrentPage - 1) * this.UsersPerPage + i < items.Count; i++) {
                                 SPListItem item = items[(iCurrentPage - 1) * this.UsersPerPage + i];
                                 added++;

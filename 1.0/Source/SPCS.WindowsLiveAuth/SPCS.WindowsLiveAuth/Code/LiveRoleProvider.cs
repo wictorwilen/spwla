@@ -16,8 +16,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
 using System.Configuration.Provider;
+using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// About wildcard search in roles: http://blogs.msdn.com/sharepoint/archive/2006/08/16/configuring-multiple-authentication-providers-for-sharepoint-2007.aspx
+    /// Excerpt: 
+    /// "Resolving group names: The People Picker can only do wildcard searches for Windows group names.  
+    /// If you have a SQL Role provider group called "Readers" and enter "Read" in the People Picker 
+    /// search dialog, it will not find your group; if you enter "Readers" it will.  
+    /// This is not a bug -- the Role provider just doesn’t provide a good way to do wildcard group searching."
+    /// </remarks>
     public class LiveRoleProvider: RoleProvider {
         public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config) {
             if (name == null || name.Length == 0) {
@@ -48,7 +61,7 @@ namespace SPCS.WindowsLiveAuth {
                 throw new ProviderException("Role note found");
             }
             IList<LiveCommunityUser> lcus = LiveCommunityUser.FindUsers("UUID", usernameToMatch);
-            switch (roleName.ToLower()) {
+            switch (roleName.ToLower(CultureInfo.CurrentCulture)) {
                 case "authenticated live users":
                     users = (from lcu in lcus
                              orderby lcu.DisplayName
@@ -113,7 +126,7 @@ namespace SPCS.WindowsLiveAuth {
                 throw new ProviderException("Role note found");
             }
             
-            List<LiveCommunityUser> lcus = LiveCommunityUser.GetAllUsers();
+            ReadOnlyCollection<LiveCommunityUser> lcus = LiveCommunityUser.AllUsers;
             switch (roleName.ToLower()) {
                 case "authenticated live users":
                     users = (from lcu in lcus
@@ -145,7 +158,7 @@ namespace SPCS.WindowsLiveAuth {
         public override bool IsUserInRole(string username, string roleName) {
 
             LiveCommunityUser lcu = LiveCommunityUser.GetUser(username);
-            switch (roleName.ToLower()) {
+            switch (roleName.ToLower(CultureInfo.CurrentCulture)) {
                 case "authenticated live users":
                     return lcu.Approved;
                 case "locked live users":
@@ -165,7 +178,7 @@ namespace SPCS.WindowsLiveAuth {
 
         public override bool RoleExists(string roleName) {
             foreach (string s in this.GetAllRoles()) {
-                if (s.ToLower() == roleName.ToLower()) {
+                if (s.ToLower(CultureInfo.CurrentCulture) == roleName.ToLower(CultureInfo.CurrentCulture)) {
                     return true;
                 }
             }

@@ -21,6 +21,7 @@ using System.Drawing.Drawing2D;
 using Microsoft.SharePoint.Utilities;
 using Microsoft.SharePoint;
 using System.Reflection;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
 
@@ -50,7 +51,7 @@ namespace SPCS.WindowsLiveAuth {
 
             int size;
             if (!string.IsNullOrEmpty(context.Request.QueryString["s"]))
-                size = int.Parse(context.Request.QueryString["s"]);
+                size = int.Parse(context.Request.QueryString["s"], CultureInfo.CurrentCulture);
             else
                 size = 100;
 
@@ -91,8 +92,12 @@ namespace SPCS.WindowsLiveAuth {
                                     gfx.CompositingQuality = CompositingQuality.HighQuality;
 
                                     gfx.DrawImage(image, 0, 0, size, size);
-
-                                    thumbnail.Save(context.Response.OutputStream, ImageFormat.Png);
+                                    using (MemoryStream ms = new MemoryStream()) {
+                                        thumbnail.Save(ms, ImageFormat.Png);
+                                        ms.WriteTo(context.Response.OutputStream);
+                                        
+                                    }
+                                    
 
 
                                 }

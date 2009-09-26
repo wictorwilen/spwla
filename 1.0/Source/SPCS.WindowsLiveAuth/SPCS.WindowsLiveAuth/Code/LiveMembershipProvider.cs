@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Security;
+using System.Linq;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveMembershipProvider: MembershipProvider {
@@ -92,7 +93,7 @@ namespace SPCS.WindowsLiveAuth {
             MembershipUserCollection userCollection = new MembershipUserCollection();
 
             //Find the users and convert the to MembershipUsers
-            List<MembershipUser> users = LiveCommunityUser.GetAllUsers().ConvertAll<MembershipUser>(
+            List<MembershipUser> users = LiveCommunityUser.AllUsers.ToList<LiveCommunityUser>().ConvertAll<MembershipUser>(
                 user => ConvertFromLiveCommunityUser(user));
 
             totalRecords = users.Count;
@@ -125,7 +126,7 @@ namespace SPCS.WindowsLiveAuth {
 
         public override string GetUserNameByEmail(string email) {
             //Find the users and convert the to MembershipUsers
-            List<LiveCommunityUser> users = LiveCommunityUser.FindUsers("Email", email);
+            IList<LiveCommunityUser> users = LiveCommunityUser.FindUsers("Email", email);
 
             if (users.Count == 0) {
                 return string.Empty;
@@ -210,8 +211,11 @@ namespace SPCS.WindowsLiveAuth {
             MembershipUserCollection userCollection = new MembershipUserCollection();
 
             //Find the users and convert the to MembershipUsers
-            List<MembershipUser> users = LiveCommunityUser.FindUsers(field, match).ConvertAll<MembershipUser>(
-                user => ConvertFromLiveCommunityUser(user));
+            List<MembershipUser> users = LiveCommunityUser
+                .FindUsers(field, match)
+                .ToList<LiveCommunityUser>()
+                .ConvertAll<MembershipUser>(
+                    user => ConvertFromLiveCommunityUser(user));
 
             totalRecords = users.Count;
             if (totalRecords <= pageSize) {

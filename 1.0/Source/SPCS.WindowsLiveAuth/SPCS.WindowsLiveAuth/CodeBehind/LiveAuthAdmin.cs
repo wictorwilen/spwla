@@ -18,6 +18,7 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
 using SPExLib.General;
 using SPExLib.SharePoint;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthAdmin: System.Web.UI.Page {
@@ -31,7 +32,7 @@ namespace SPCS.WindowsLiveAuth {
 
         private void Page_Load(object sender, System.EventArgs e) {
             if (!SPContext.Current.Web.UserIsSiteAdmin) {
-                SPUtility.HandleAccessDenied(new UnauthorizedAccessException(SPResource.GetString("AdminVs401Message", new object[0])));
+                SPUtility.HandleAccessDenied(new UnauthorizedAccessException(SPResource.GetString(CultureInfo.CurrentCulture, "AdminVs401Message", new object[0])));
             }
 
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);

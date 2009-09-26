@@ -20,6 +20,7 @@ using System.Web.UI;
 using WindowsLive;
 using SPExLib.General;
 using SPExLib.SharePoint;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthProfile: System.Web.UI.Page {
@@ -55,7 +56,7 @@ namespace SPCS.WindowsLiveAuth {
                 redir = Request.QueryString["Source"];
 
             LiveAuthConfiguration settings = LiveAuthConfiguration.GetSettings(SPContext.Current.Site.WebApplication);
-            WindowsLiveLogin wll = new WindowsLiveLogin(settings.ApplicationId, settings.ApplicationKey, settings.ApplicationAlgorithm, false, string.Empty);
+            
 
 
 
@@ -71,7 +72,7 @@ namespace SPCS.WindowsLiveAuth {
                         lcu = LiveCommunityUser.GetUser(uuid);
                     }
                     else if (!string.IsNullOrEmpty(id)) {
-                        SPUser spUser = SPContext.Current.Web.AllUsers.GetByID(int.Parse(id));
+                        SPUser spUser = SPContext.Current.Web.AllUsers.GetByID(int.Parse(id, CultureInfo.CurrentCulture));
                         lcu = LiveCommunityUser.GetUser(spUser.GetFormsLoginName());
                     }
                     else {
@@ -113,7 +114,7 @@ namespace SPCS.WindowsLiveAuth {
                 Response.Redirect(redir);
             }
         }
-        public const int size = 400;
+        private const int size = 400;
         public void Close_Click(Object sender, EventArgs e) {
                 Response.Redirect(redir);            
         }

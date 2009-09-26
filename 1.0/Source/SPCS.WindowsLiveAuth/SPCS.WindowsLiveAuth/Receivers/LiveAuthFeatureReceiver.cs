@@ -13,9 +13,14 @@
  * 
  */
 using Microsoft.SharePoint;
+using Microsoft.SharePoint.Security;
+using System.Security.Permissions;
+using SPExLib.SharePoint;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthFeatureReceiver : SPFeatureReceiver {
+        [SharePointPermission(SecurityAction.LinkDemand, ObjectModel=true)]
         public override void FeatureActivated(SPFeatureReceiverProperties properties) {
             SPSite site = properties.Feature.Parent as SPSite;
 
@@ -34,7 +39,7 @@ namespace SPCS.WindowsLiveAuth {
                 }
             }
         }
-
+        [SharePointPermission(SecurityAction.LinkDemand, ObjectModel = true)]
         public override void FeatureDeactivating(SPFeatureReceiverProperties properties) {
             SPSite site = properties.Feature.Parent as SPSite;
             LiveAuthConfiguration settings = site.WebApplication.GetChild<LiveAuthConfiguration>("LiveAuthConfiguration");
@@ -45,8 +50,9 @@ namespace SPCS.WindowsLiveAuth {
                     using (SPWeb lWeb = lSite.OpenWeb()) {
                         SPList lList = lWeb.Lists[settings.SiteSyncListName];
                         SPQuery query = new SPQuery();
-                        query.Query = string.Format("<Where><Eq><FieldRef Name='Url'/><Value Type='Text'>{0}</Value></Eq></Where>", site.Url);
-                        SPListItemCollection items = lList.GetItems(query);
+                        SPListItemCollection items = lList.GetItems(string.Format(CultureInfo.CurrentCulture, 
+                            "<Where><Eq><FieldRef Name='Url'/><Value Type='Text'>{0}</Value></Eq></Where>", 
+                            site.Url));
 
                         if (items.Count > 0) {
                             items[0].Delete();
@@ -58,9 +64,11 @@ namespace SPCS.WindowsLiveAuth {
             }
         }
 
+        [SharePointPermission(SecurityAction.LinkDemand, ObjectModel = true)]
         public override void FeatureInstalled(SPFeatureReceiverProperties properties) {
         }
 
+        [SharePointPermission(SecurityAction.LinkDemand, ObjectModel = true)]
         public override void FeatureUninstalling(SPFeatureReceiverProperties properties) {
         }
     }

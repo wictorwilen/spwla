@@ -24,6 +24,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Xml;
+using System.Globalization;
 
 namespace WindowsLive
 {
@@ -166,7 +167,7 @@ namespace WindowsLive
             string forceDelAuthNonProvisioned = appSettings["wll_force_delauth_nonprovisioned"];
 
             if (!string.IsNullOrEmpty(forceDelAuthNonProvisioned) && 
-                (forceDelAuthNonProvisioned.ToLower() == "true"))
+                (forceDelAuthNonProvisioned.ToLower(CultureInfo.CurrentCulture) == "true"))
             {
                 ForceDelAuthNonProvisioned = true;
             }
@@ -375,7 +376,7 @@ namespace WindowsLive
 
                 try 
                 {
-                    timestampInt = Convert.ToInt32(value);
+                    timestampInt = Convert.ToInt32(value,  CultureInfo.CurrentCulture);
                 } 
                 catch (Exception) 
                 {
@@ -410,7 +411,7 @@ namespace WindowsLive
             }
         }
 
-        bool forceDelAuthNonProvisioned = false;
+        bool forceDelAuthNonProvisioned;
 
         /// <summary>
         /// Sets or gets a flag that indicates whether Delegated Authentication

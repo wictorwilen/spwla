@@ -17,6 +17,7 @@ using System.Web.Security;
 using System.Web;
 using Microsoft.SharePoint;
 using System;
+using System.Globalization;
 
 namespace SPCS.WindowsLiveAuth {
     public class LiveAuthHandler : IHttpHandler {
@@ -97,7 +98,8 @@ namespace SPCS.WindowsLiveAuth {
             }
 
             
-            string liveLogin = string.Format("{0}://login.live.com/wlogin.srf?appid={1}&alg={2}&appctx=",
+            string liveLogin = string.Format(CultureInfo.CurrentCulture, 
+                "{0}://login.live.com/wlogin.srf?appid={1}&alg={2}&appctx=",
                 settings.ApplicationMode.ToString(),
                 settings.ApplicationId,
                 settings.ApplicationAlgorithm);
